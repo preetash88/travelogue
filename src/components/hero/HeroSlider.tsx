@@ -210,7 +210,7 @@ const HeroSlider = () => {
                     className="
         absolute
         left-1/2
-        top-[30px]
+        top-[25px]
         z-40
         -translate-x-1/2
         text-white/40
@@ -226,7 +226,7 @@ const HeroSlider = () => {
       relative
       h-[520px]
       w-[120px]
-      overflow-hidden
+      overflow-visible
     "
                 >
                     {destinations.map((item, index) => {
@@ -242,17 +242,15 @@ const HeroSlider = () => {
                                     setAutoplay(false);
                                 }}
                                 animate={{
-                                    y: offset * 140,
+                                    y: offset * 155,
                                     scale: isActive ? 1 : 0.72,
                                     rotateZ: isActive ? 0 : offset * 1.5,
                                     opacity:
-                                        Math.abs(offset) > 2
+                                        Math.abs(offset) > 1
                                             ? 0
                                             : isActive
                                                 ? 1
-                                                : Math.abs(offset) === 1
-                                                    ? 0.45
-                                                    : 0.18
+                                                : 0.32
                                 }}
                                 transition={{
                                     duration: 0.8,
@@ -359,7 +357,7 @@ const HeroSlider = () => {
                     className="
         absolute
         left-1/2
-        bottom-[30px]
+        bottom-[25px]
         z-40
         -translate-x-1/2
         text-white/40
