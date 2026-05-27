@@ -2,27 +2,28 @@ import { motion, useMotionValue, useSpring } from "framer-motion";
 import { useEffect } from "react";
 
 const LuxuryCursor = () => {
-    const mouseX = useMotionValue(0);
-    const mouseY = useMotionValue(0);
+    const mouseX = useMotionValue(-100);
+    const mouseY = useMotionValue(-100);
 
-    const springX = useSpring(mouseX, {
-        damping: 25,
-        stiffness: 250,
-    });
+    const springConfig = {
+        damping: 35,
+        stiffness: 2000,
+        mass: 0.10,
+    };
 
-    const springY = useSpring(mouseY, {
-        damping: 25,
-        stiffness: 250,
-    });
+    const cursorX = useSpring(mouseX, springConfig);
+    const cursorY = useSpring(mouseY, springConfig);
 
     useEffect(() => {
         const moveCursor = (e: MouseEvent) => {
-            mouseX.set(e.clientX - 12);
+            mouseX.set(e.clientX - 8);
 
-            mouseY.set(e.clientY - 12);
+            mouseY.set(e.clientY - 8);
         };
 
-        window.addEventListener("mousemove", moveCursor);
+        window.addEventListener("mousemove", moveCursor, {
+            passive: true,
+        });
 
         return () => {
             window.removeEventListener("mousemove", moveCursor);
@@ -32,22 +33,22 @@ const LuxuryCursor = () => {
     return (
         <motion.div
             style={{
-                x: springX,
-                y: springY,
+                x: cursorX,
+                y: cursorY,
             }}
             className="
         pointer-events-none
         fixed
         left-0
         top-0
-        z-[9999]
+        z-[99999]
         hidden
-        h-6
-        w-6
+        h-4
+        w-4
         rounded-full
         border
-        border-white/40
-        bg-white/10
+        border-white/70
+        bg-white/20
         md:block
       "
         />

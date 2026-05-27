@@ -111,10 +111,11 @@ const HeroSlider = () => {
                                 className="
                   absolute
                   bottom-20
-                  left-6
+                  left-32
                   z-20
                   max-w-4xl
-                  md:left-12
+                  md:left-44
+                  lg:left-52
                 "
                             >
                                 <p
@@ -157,22 +158,22 @@ const HeroSlider = () => {
                                 </p>
 
                                 <MagneticButton
-                  //                   whileHover={{
-                  //                       scale: 1.05,
-                  //                   }}
-                  //                   whileTap={{
-                  //                       scale: 0.96,
-                  //                   }}
-                  //                   className="
-                  //   glass
-                  //   mt-8
-                  //   rounded-full
-                  //   px-8
-                  //   py-4
-                  //   text-sm
-                  //   uppercase
-                  //   tracking-[0.2em]
-                  // "
+                                    //                   whileHover={{
+                                    //                       scale: 1.05,
+                                    //                   }}
+                                    //                   whileTap={{
+                                    //                       scale: 0.96,
+                                    //                   }}
+                                    //                   className="
+                                    //   glass
+                                    //   mt-8
+                                    //   rounded-full
+                                    //   px-8
+                                    //   py-4
+                                    //   text-sm
+                                    //   uppercase
+                                    //   tracking-[0.2em]
+                                    // "
                                 >
                                     Explore Destination
                                 </MagneticButton>
@@ -184,46 +185,229 @@ const HeroSlider = () => {
 
             <div
                 className="
-          absolute
-          bottom-8
-          left-1/2
-          z-30
-          flex
-          -translate-x-1/2
-          gap-3
-        "
+    absolute
+    left-6
+    top-1/2
+    z-30
+    hidden
+    -translate-y-1/2
+    flex-col
+    gap-4
+    lg:flex
+  "
             >
-                {destinations.map((_, index) => (
-                    <button
-                        key={index}
+                {destinations.map((item, index) => (
+                    <motion.button
+                        key={item.id}
                         onClick={() => emblaApi?.scrollTo(index)}
-                        className="
-              relative
-              h-[3px]
-              w-16
-              overflow-hidden
-              rounded-full
-              bg-white/20
-            "
+                        whileHover={{
+                            x: 12,
+                        }}
+                        className={`
+        group
+        relative
+        overflow-hidden
+        rounded-[1.5rem]
+        border
+        transition-all
+        duration-500
+
+        ${
+                            selectedIndex === index
+                                ? "border-white/40 scale-100"
+                                : "border-white/10 scale-90 opacity-50"
+                        }
+      `}
                     >
-                        <motion.div
-                            animate={{
-                                width: selectedIndex === index ? "100%" : "0%",
-                            }}
-                            transition={{
-                                duration: 4.8,
-                                ease: "linear",
+                        <div className="relative h-[120px] w-[90px] overflow-hidden">
+                            <img
+                                src={item.image}
+                                alt={item.title}
+                                className="
+            h-full
+            w-full
+            object-cover
+            transition-transform
+            duration-700
+            group-hover:scale-110
+          "
+                            />
+
+                            <div
+                                className="
+            absolute
+            inset-0
+            bg-gradient-to-t
+            from-black/80
+            via-black/20
+            to-transparent
+          "
+                            />
+                        </div>
+
+                        <div
+                            className="
+          absolute
+          bottom-3
+          left-3
+        "
+                        >
+                            <p
+                                className="
+            text-[10px]
+            uppercase
+            tracking-[0.3em]
+            text-white/80
+          "
+                            >
+                                {item.title}
+                            </p>
+                        </div>
+                    </motion.button>
+                ))}
+            </div>
+            <div
+                className="
+    absolute
+    right-8
+    top-1/2
+    z-30
+    hidden
+    -translate-y-1/2
+    items-center
+    gap-6
+    lg:flex
+  "
+            >
+                <div
+                    className="
+      relative
+      flex
+      h-[320px]
+      w-[2px]
+      flex-col
+      items-center
+      justify-between
+      rounded-full
+      bg-white/15
+    "
+                >
+                    {destinations.map((_, index) => (
+                        <motion.button
+                            key={index}
+                            onClick={() => emblaApi?.scrollTo(index)}
+                            whileHover={{
+                                scale: 1.2,
                             }}
                             className="
-                absolute
-                left-0
-                top-0
-                h-full
-                bg-white
-              "
-                        />
-                    </button>
-                ))}
+          relative
+          z-10
+          flex
+          h-4
+          w-4
+          items-center
+          justify-center
+          rounded-full
+        "
+                        >
+                            <motion.div
+                                animate={{
+                                    scale: selectedIndex === index ? 1.8 : 1,
+                                    opacity: selectedIndex === index ? 1 : 0.5,
+                                }}
+                                transition={{
+                                    duration: 0.4,
+                                }}
+                                className={`
+            h-2
+            w-2
+            rounded-full
+
+            ${
+                                    selectedIndex === index
+                                        ? "bg-white shadow-[0_0_20px_rgba(255,255,255,0.9)]"
+                                        : "bg-white/50"
+                                }
+          `}
+                            />
+                        </motion.button>
+                    ))}
+
+                    <motion.div
+                        animate={{
+                            top: `${selectedIndex * 33.3}%`,
+                        }}
+                        transition={{
+                            duration: 0.6,
+                            ease: "easeOut",
+                        }}
+                        className="
+        absolute
+        left-1/2
+        h-16
+        w-[2px]
+        -translate-x-1/2
+        rounded-full
+        bg-gradient-to-b
+        from-white
+        via-cyan-200
+        to-transparent
+      "
+                    />
+                </div>
+
+                <div
+                    className="
+      flex
+      flex-col
+      items-center
+      justify-between
+      gap-6
+    "
+                >
+                    <motion.span
+                        key={selectedIndex}
+                        initial={{
+                            opacity: 0,
+                            y: 10,
+                        }}
+                        animate={{
+                            opacity: 1,
+                            y: 0,
+                        }}
+                        transition={{
+                            duration: 0.4,
+                        }}
+                        className="
+        text-sm
+        font-medium
+        tracking-[0.3em]
+        text-white/80
+      "
+                    >
+                        {String(selectedIndex + 1).padStart(2, "0")}
+                    </motion.span>
+
+                    <div
+                        className="
+        h-20
+        w-px
+        bg-white/20
+      "
+                    />
+
+                    <span
+                        className="
+        text-xs
+        uppercase
+        tracking-[0.3em]
+        text-white/30
+        [writing-mode:vertical-rl]
+      "
+                    >
+      Explore
+    </span>
+                </div>
             </div>
         </section>
     );
