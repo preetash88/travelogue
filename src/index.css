@@ -1,0 +1,111 @@
+@import "@fontsource/inter";
+
+@import "tailwindcss";
+
+img,
+button,
+h1,
+p,
+section,
+div {
+    backface-visibility: hidden;
+
+    transform: translateZ(0);
+}
+
+:root {
+    font-family: "Inter", sans-serif;
+
+    color: white;
+
+    background: #050816;
+
+    font-synthesis: none;
+
+    text-rendering: optimizeLegibility;
+
+    -webkit-font-smoothing: antialiased;
+
+    -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: auto;
+}
+
+body {
+    overflow-x: hidden;
+
+    background: #050816;
+}
+
+img {
+    user-select: none;
+
+    -webkit-user-drag: none;
+}
+
+button {
+    border: none;
+    outline: none;
+}
+
+.glass {
+    background: rgba(255, 255, 255, 0.08);
+
+    backdrop-filter: blur(20px);
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.gpu {
+    transform: translateZ(0);
+
+    will-change: transform;
+}
+
+.embla {
+    overflow: hidden;
+}
+
+.embla__container {
+    display: flex;
+}
+
+.embla__slide {
+    position: relative;
+
+    flex: 0 0 100%;
+}
+
+body::before {
+    content: "";
+
+    position: fixed;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    opacity: 0.035;
+
+    z-index: 999;
+
+    background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+}
+
+@media (max-width: 768px) {
+    .glass {
+        backdrop-filter: blur(10px);
+    }
+
+    h1 {
+        letter-spacing: -0.04em;
+    }
+}
