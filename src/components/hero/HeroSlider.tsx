@@ -9,6 +9,7 @@ const AUTOPLAY_DELAY = 5000;
 
 const HeroSlider = () => {
     const [selectedIndex, setSelectedIndex] = useState(0);
+    const [autoplay, setAutoplay] = useState(true);
 
     const {x, y} = useMousePosition();
 
@@ -31,13 +32,27 @@ const HeroSlider = () => {
     }, [emblaApi]);
 
     useEffect(() => {
-        if (!emblaApi) return;
+        if (!emblaApi || !autoplay) return;
 
-        const autoplay = setInterval(() => {
+        const autoplayTimer = setInterval(() => {
             emblaApi.scrollNext();
         }, AUTOPLAY_DELAY);
 
-        return () => clearInterval(autoplay);
+        return () => clearInterval(autoplayTimer);
+    }, [emblaApi, autoplay]);
+
+    useEffect(() => {
+        if (!emblaApi) return;
+
+        const stopAutoplay = () => {
+            setAutoplay(false);
+        };
+
+        emblaApi.on("pointerDown", stopAutoplay);
+
+        return () => {
+            emblaApi.off("pointerDown", stopAutoplay);
+        };
     }, [emblaApi]);
 
     return (
@@ -158,22 +173,6 @@ const HeroSlider = () => {
                                 </p>
 
                                 <MagneticButton
-                                    //                   whileHover={{
-                                    //                       scale: 1.05,
-                                    //                   }}
-                                    //                   whileTap={{
-                                    //                       scale: 0.96,
-                                    //                   }}
-                                    //                   className="
-                                    //   glass
-                                    //   mt-8
-                                    //   rounded-full
-                                    //   px-8
-                                    //   py-4
-                                    //   text-sm
-                                    //   uppercase
-                                    //   tracking-[0.2em]
-                                    // "
                                 >
                                     Explore Destination
                                 </MagneticButton>
@@ -186,86 +185,194 @@ const HeroSlider = () => {
             <div
                 className="
     absolute
-    left-6
+    left-8
     top-1/2
     z-30
     hidden
     -translate-y-1/2
-    flex-col
-    gap-4
-    lg:flex
+    lg:block
   "
             >
-                {destinations.map((item, index) => (
-                    <motion.button
-                        key={item.id}
-                        onClick={() => emblaApi?.scrollTo(index)}
-                        whileHover={{
-                            x: 12,
-                        }}
-                        className={`
-        group
-        relative
-        overflow-hidden
-        rounded-[1.5rem]
-        border
+  {/*              <div*/}
+  {/*                  className="*/}
+  {/*  absolute*/}
+  {/*  inset-0*/}
+  {/*  rounded-[3rem]*/}
+  {/*  bg-black/10*/}
+  {/*  backdrop-blur-[12px]*/}
+  {/*"*/}
+  {/*              />*/}
+                <button
+                    onClick={() => {
+                        emblaApi?.scrollPrev();
+                        setAutoplay(false);
+                    }}
+                    className="
+        absolute
+        left-1/2
+        top-[30px]
+        z-40
+        -translate-x-1/2
+        text-white/40
         transition-all
-        duration-500
+        duration-300
+        hover:text-white
+    "
+                >
+                    <span className="text-2xl font-thin">↑</span>
+                </button>
+                <div
+                    className="
+      relative
+      h-[520px]
+      w-[120px]
+      overflow-hidden
+    "
+                >
+                    {destinations.map((item, index) => {
+                        const offset = index - selectedIndex;
 
-        ${
-                            selectedIndex === index
-                                ? "border-white/40 scale-100"
-                                : "border-white/10 scale-90 opacity-50"
-                        }
-      `}
-                    >
-                        <div className="relative h-[120px] w-[90px] overflow-hidden">
-                            <img
-                                src={item.image}
-                                alt={item.title}
-                                className="
-            h-full
-            w-full
-            object-cover
-            transition-transform
-            duration-700
-            group-hover:scale-110
-          "
-                            />
+                        const isActive = offset === 0;
 
-                            <div
+                        return (
+                            <motion.button
+                                key={item.id}
+                                onClick={() => {
+                                    emblaApi?.scrollTo(index);
+                                    setAutoplay(false);
+                                }}
+                                animate={{
+                                    y: offset * 140,
+                                    scale: isActive ? 1 : 0.72,
+                                    rotateZ: isActive ? 0 : offset * 1.5,
+                                    opacity:
+                                        Math.abs(offset) > 2
+                                            ? 0
+                                            : isActive
+                                                ? 1
+                                                : Math.abs(offset) === 1
+                                                    ? 0.45
+                                                    : 0.18
+                                }}
+                                transition={{
+                                    duration: 0.8,
+                                    ease: [0.22, 1, 0.36, 1],
+                                }}
+                                whileHover={{
+                                    scale: isActive ? 1 : 0.8,
+                                }}
                                 className="
             absolute
-            inset-0
-            bg-gradient-to-t
-            from-black/80
-            via-black/20
-            to-transparent
-          "
-                            />
-                        </div>
-
-                        <div
-                            className="
-          absolute
-          bottom-3
-          left-3
-        "
-                        >
-                            <p
-                                className="
-            text-[10px]
-            uppercase
-            tracking-[0.3em]
-            text-white/80
+            left-0
+            top-1/2
+            origin-center
+            -translate-y-1/2
           "
                             >
-                                {item.title}
-                            </p>
-                        </div>
-                    </motion.button>
-                ))}
+                                {isActive && (
+                                    <div
+                                        className="
+            absolute
+            inset-0
+            rounded-[2rem]
+            bg-cyan-300/10
+            blur-2xl
+        "
+                                    />
+                                )}
+
+                                <div
+                                    className={`
+              relative
+              overflow-hidden
+              rounded-[2rem]
+              transition-all
+              duration-700
+
+              ${
+                                        isActive
+                                            ? `
+      h-[180px]
+      w-[120px]
+      border
+      border-white/30
+      shadow-[0_0_50px_rgba(255,255,255,0.15)]
+    `
+                                            : `
+      h-[110px]
+      w-[82px]
+      border
+      border-white/8
+    `
+                                    }
+            `}
+                                >
+                                    <img
+                                        src={item.image}
+                                        alt={item.title}
+                                        className="
+                h-full
+                w-full
+                object-cover
+                brightness-[0.92]
+                contrast-[1.08]
+                saturate-[1.1]
+              "
+                                    />
+
+                                    <div
+                                        className="
+                absolute
+                inset-0
+                bg-gradient-to-t
+                from-black/90
+                via-black/20
+                to-transparent
+              "
+                                    />
+                                </div>
+
+                                <motion.p
+                                    animate={{
+                                        opacity: isActive ? 1 : 0.4,
+                                    }}
+                                    className="
+              mt-4
+              text-center
+              text-[10px]
+              uppercase
+              tracking-[0.4em]
+              text-white
+            "
+                                >
+                                    {item.title}
+                                </motion.p>
+                            </motion.button>
+                        );
+                    })}
+                </div>
+                <button
+                    onClick={() => {
+                        emblaApi?.scrollNext();
+                        setAutoplay(false);
+                    }}
+                    className="
+        absolute
+        left-1/2
+        bottom-[30px]
+        z-40
+        -translate-x-1/2
+        text-white/40
+        transition-all
+        duration-300
+        hover:text-white
+    "
+                >
+
+                    <span className="text-2xl font-thin">↓</span>
+                </button>
             </div>
+
             <div
                 className="
     absolute
@@ -295,7 +402,10 @@ const HeroSlider = () => {
                     {destinations.map((_, index) => (
                         <motion.button
                             key={index}
-                            onClick={() => emblaApi?.scrollTo(index)}
+                            onClick={() => {
+                                emblaApi?.scrollTo(index);
+                                setAutoplay(false);
+                            }}
                             whileHover={{
                                 scale: 1.2,
                             }}
