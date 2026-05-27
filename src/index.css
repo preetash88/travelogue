@@ -109,3 +109,85 @@ body::before {
         letter-spacing: -0.04em;
     }
 }
+
+body::after {
+    content: "";
+
+    position: fixed;
+
+    top: -20%;
+
+    left: -10%;
+
+    width: 600px;
+
+    height: 600px;
+
+    background: radial-gradient(
+            circle,
+            rgba(0, 180, 255, 0.12),
+            transparent 70%
+    );
+
+    filter: blur(100px);
+
+    z-index: -1;
+
+    pointer-events: none;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #050816;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+::selection {
+    background: rgba(0, 180, 255, 0.35);
+
+    color: white;
+}
+
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+html {
+    overscroll-behavior: none;
+}
+
+body {
+    overscroll-behavior: none;
+}
+
+.gradient-orb {
+    position: absolute;
+
+    width: 600px;
+
+    height: 600px;
+
+    border-radius: 999px;
+
+    background: radial-gradient(
+            circle,
+            rgba(0, 180, 255, 0.18),
+            transparent 70%
+    );
+
+    filter: blur(120px);
+
+    pointer-events: none;
+}

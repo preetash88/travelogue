@@ -1,12 +1,16 @@
 import useEmblaCarousel from "embla-carousel-react";
-import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import { destinations } from "../../utils/travelData";
+import {motion} from "framer-motion";
+import {useEffect, useState} from "react";
+import {destinations} from "../../utils/travelData";
+import useMousePosition from "../../hook/useMousePosition.ts";
+import MagneticButton from "../ui/MagneticButton";
 
 const AUTOPLAY_DELAY = 5000;
 
 const HeroSlider = () => {
     const [selectedIndex, setSelectedIndex] = useState(0);
+
+    const {x, y} = useMousePosition();
 
     const [emblaRef, emblaApi] = useEmblaCarousel({
         loop: true,
@@ -49,6 +53,8 @@ const HeroSlider = () => {
                                 className="absolute inset-0"
                                 animate={{
                                     scale: selectedIndex === index ? 1 : 1.12,
+                                    x: x * 30,
+                                    y: y * 30,
                                 }}
                                 transition={{
                                     duration: 6,
@@ -150,26 +156,26 @@ const HeroSlider = () => {
                                     immersive cultures, and unforgettable experiences.
                                 </p>
 
-                                <motion.button
-                                    whileHover={{
-                                        scale: 1.05,
-                                    }}
-                                    whileTap={{
-                                        scale: 0.96,
-                                    }}
-                                    className="
-                    glass
-                    mt-8
-                    rounded-full
-                    px-8
-                    py-4
-                    text-sm
-                    uppercase
-                    tracking-[0.2em]
-                  "
+                                <MagneticButton
+                  //                   whileHover={{
+                  //                       scale: 1.05,
+                  //                   }}
+                  //                   whileTap={{
+                  //                       scale: 0.96,
+                  //                   }}
+                  //                   className="
+                  //   glass
+                  //   mt-8
+                  //   rounded-full
+                  //   px-8
+                  //   py-4
+                  //   text-sm
+                  //   uppercase
+                  //   tracking-[0.2em]
+                  // "
                                 >
                                     Explore Destination
-                                </motion.button>
+                                </MagneticButton>
                             </motion.div>
                         </div>
                     ))}
