@@ -26,6 +26,7 @@ const StickyShowcase = () => {
             <div
                 className="
           sticky
+          gpu
           top-0
           flex
           h-screen

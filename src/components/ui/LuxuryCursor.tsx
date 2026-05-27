@@ -48,7 +48,6 @@ const LuxuryCursor = () => {
         border
         border-white/40
         bg-white/10
-        backdrop-blur-sm
         md:block
       "
         />

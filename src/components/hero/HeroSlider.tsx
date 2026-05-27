@@ -52,7 +52,7 @@ const HeroSlider = () => {
                             <motion.div
                                 className="absolute inset-0"
                                 animate={{
-                                    scale: selectedIndex === index ? 1 : 1.12,
+                                    scale: selectedIndex === index ? 1 : 1.04,
                                     x: x * 30,
                                     y: y * 30,
                                 }}

@@ -1,7 +1,7 @@
 const AmbientParticles = () => {
     return (
         <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-            {[...Array(20)].map((_, index) => (
+            {[...Array(8)].map((_, index) => (
                 <span
                     key={index}
                     className="

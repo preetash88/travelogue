@@ -2,16 +2,16 @@
 
 @import "tailwindcss";
 
-img,
-button,
-h1,
-p,
-section,
-div {
-    backface-visibility: hidden;
+/*img,*/
+/*button,*/
+/*h1,*/
+/*p,*/
+/*section,*/
+/*div {*/
+/*    backface-visibility: hidden;*/
 
-    transform: translateZ(0);
-}
+/*    transform: translateZ(0);*/
+/*}*/
 
 :root {
     font-family: "Inter", sans-serif;
@@ -56,6 +56,27 @@ button {
     outline: none;
 }
 
+html,
+body {
+    width: 100%;
+
+    overflow-x: hidden;
+
+    background: #050816;
+}
+
+body {
+    position: relative;
+
+    min-height: 100vh;
+}
+
+canvas,
+video,
+img {
+    contain: paint;
+}
+
 .glass {
     background: rgba(255, 255, 255, 0.08);
 
@@ -65,7 +86,9 @@ button {
 }
 
 .gpu {
-    transform: translateZ(0);
+    transform: translate3d(0, 0, 0);
+
+    backface-visibility: hidden;
 
     will-change: transform;
 }
@@ -107,6 +130,9 @@ body::before {
 
     h1 {
         letter-spacing: -0.04em;
+    }
+    .sticky {
+        position: relative !important;
     }
 }
 
@@ -190,4 +216,60 @@ body {
     filter: blur(120px);
 
     pointer-events: none;
+}
+
+body {
+    cursor: none;
+}
+
+@media (max-width: 768px) {
+    body {
+        cursor: auto;
+    }
+}
+
+section {
+    position: relative;
+
+    isolation: isolate;
+}
+
+img {
+    content-visibility: auto;
+}
+
+/*video {*/
+/*    content-visibility: auto;*/
+/*}*/
+
+html.lenis {
+    scroll-behavior: auto;
+}
+
+.lenis.lenis-smooth {
+    scroll-behavior: auto;
+}
+
+@media (max-width: 768px) {
+    .gradient-orb,
+    .ambient-light,
+    .particles {
+        display: none;
+    }
+
+    * {
+        animation-duration: 0.6s !important;
+    }
+}
+
+.gpu-layer {
+    transform: translate3d(0, 0, 0);
+
+    backface-visibility: hidden;
+
+    perspective: 1000;
+}
+
+section {
+    will-change: opacity, transform;
 }
