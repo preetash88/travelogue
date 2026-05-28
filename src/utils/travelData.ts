@@ -1,5 +1,5 @@
-import iceland from "../assets/destinations/iceland1.avif";
-import bali from "../assets/destinations/bali1.avif";
+import iceland from "../assets/destinations/iceland.avif";
+import bali from "../assets/destinations/bali2.avif";
 import kerala from "../assets/destinations/kerala1.avif";
 import norway from "../assets/destinations/norway2.avif";
 import yosemite from "../assets/destinations/yosemite1.avif";
