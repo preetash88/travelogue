@@ -1,7 +1,7 @@
 import useEmblaCarousel from "embla-carousel-react";
-import {motion} from "framer-motion";
-import {useEffect, useState} from "react";
-import {destinations} from "../../utils/travelData";
+import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { destinations } from "../../utils/travelData";
 import useMousePosition from "../../hook/useMousePosition.ts";
 import MagneticButton from "../ui/MagneticButton";
 
@@ -11,7 +11,7 @@ const HeroSlider = () => {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [autoplay, setAutoplay] = useState(true);
 
-    const {x, y} = useMousePosition();
+    const { x, y } = useMousePosition();
 
     const [emblaRef, emblaApi] = useEmblaCarousel({
         loop: true,
@@ -67,13 +67,28 @@ const HeroSlider = () => {
                             <motion.div
                                 className="absolute inset-0"
                                 animate={{
-                                    scale: selectedIndex === index ? 1 : 1.04,
-                                    x: x * 30,
-                                    y: y * 30,
+                                    scale:
+                                        selectedIndex === index
+                                            ? [1, 1.008, 1]
+                                            : 1.015,
+
+                                    x:
+                                        selectedIndex === index
+                                            ? [0, -12, 0]
+                                            : x * 0.01,
+
+                                    y:
+                                        selectedIndex === index
+                                            ? [-50, -100, -50]
+                                            : y * 0.01,
                                 }}
                                 transition={{
-                                    duration: 6,
-                                    ease: "easeOut",
+                                    duration: 18,
+                                    repeat:
+                                        selectedIndex === index
+                                            ? Infinity
+                                            : 0,
+                                    ease: "easeInOut",
                                 }}
                             >
                                 <img
@@ -84,8 +99,67 @@ const HeroSlider = () => {
                     h-full
                     w-full
                     object-cover
+                    object-center
                     gpu
                   "
+                                />
+                                <div
+                                    className="
+    absolute
+    inset-x-0
+    bottom-0
+    z-20
+    h-[38%]
+    bg-gradient-to-t
+    from-[#050816]
+    via-[#050816]/40
+    to-transparent
+  "
+                                />
+                                <motion.div
+                                    animate={{
+                                        y: [-4, 4, -4],
+                                        opacity: [0.65, 0.8, 0.65],
+                                    }}
+                                    transition={{
+                                        duration: 12,
+                                        repeat: Infinity,
+                                        ease: "easeInOut",
+                                    }}
+                                    className="
+absolute
+inset-x-0
+bottom-0
+z-30
+h-[42%]
+bg-gradient-to-t
+from-[#050816]/45
+via-[#050816]/10
+to-transparent
+pointer-events-none
+"
+                                />
+                                <motion.div
+                                    animate={{
+                                        opacity: [0.08, 0.16, 0.08],
+                                        x: [-30, 30, -30],
+                                    }}
+                                    transition={{
+                                        duration: 20,
+                                        repeat: Infinity,
+                                        ease: "easeInOut",
+                                    }}
+                                    className="
+absolute
+inset-0
+z-10
+bg-gradient-to-r
+from-white/10
+via-transparent
+to-white/5
+blur-3xl
+pointer-events-none
+"
                                 />
                             </motion.div>
 
@@ -99,7 +173,7 @@ const HeroSlider = () => {
                                 className="
                   absolute
                   inset-0
-                  bg-black/40
+                  bg-black/20
                 "
                             />
 
@@ -108,16 +182,17 @@ const HeroSlider = () => {
                   absolute
                   inset-0
                   bg-gradient-to-t
-                  from-[#050816]
+                  from-[#050816]/70
                   via-transparent
-                  to-black/40
+                  to-black/20
                 "
                             />
 
                             <motion.div
                                 animate={{
-                                    y: selectedIndex === index ? 0 : 60,
+                                    y: selectedIndex === index ? 0 : 80,
                                     opacity: selectedIndex === index ? 1 : 0,
+                                    scale: selectedIndex === index ? 1 : 0.96,
                                 }}
                                 transition={{
                                     duration: 1.2,
@@ -125,7 +200,7 @@ const HeroSlider = () => {
                                 }}
                                 className="
                   absolute
-                  bottom-20
+                  bottom-8
                   left-32
                   z-20
                   max-w-4xl
@@ -148,12 +223,17 @@ const HeroSlider = () => {
 
                                 <h1
                                     className="
-                    text-5xl
-                    font-black
-                    leading-none
-                    md:text-8xl
-                    lg:text-[11rem]
-                  "
+relative
+z-10
+text-6xl
+font-semibold
+leading-none
+tracking-[-0.04em]
+text-[#f8f8f8]/85
+md:text-[9rem]
+lg:text-[13rem]
+tracking-[-0.06em]
+"
                                 >
                                     {item.title}
                                 </h1>
@@ -164,7 +244,7 @@ const HeroSlider = () => {
                     max-w-xl
                     text-sm
                     leading-relaxed
-                    text-white/70
+                    text-white/55
                     md:text-base
                   "
                                 >
@@ -193,15 +273,15 @@ const HeroSlider = () => {
     lg:block
   "
             >
-  {/*              <div*/}
-  {/*                  className="*/}
-  {/*  absolute*/}
-  {/*  inset-0*/}
-  {/*  rounded-[3rem]*/}
-  {/*  bg-black/10*/}
-  {/*  backdrop-blur-[12px]*/}
-  {/*"*/}
-  {/*              />*/}
+                {/*              <div*/}
+                {/*                  className="*/}
+                {/*  absolute*/}
+                {/*  inset-0*/}
+                {/*  rounded-[3rem]*/}
+                {/*  bg-black/10*/}
+                {/*  backdrop-blur-[12px]*/}
+                {/*"*/}
+                {/*              />*/}
                 <button
                     onClick={() => {
                         emblaApi?.scrollPrev();
@@ -287,8 +367,7 @@ const HeroSlider = () => {
               transition-all
               duration-700
 
-              ${
-                                        isActive
+              ${isActive
                                             ? `
       h-[180px]
       w-[120px]
@@ -302,21 +381,43 @@ const HeroSlider = () => {
       border
       border-white/8
     `
-                                    }
+                                        }
             `}
                                 >
-                                    <img
-                                        src={item.image}
-                                        alt={item.title}
-                                        className="
-                h-full
-                w-full
-                object-cover
-                brightness-[0.92]
-                contrast-[1.08]
-                saturate-[1.1]
-              "
-                                    />
+                                    <>
+                                        {/* Background Fill Layer */}
+                                        {/* <img
+                                            src={item.image}
+                                            alt={item.title}
+                                            aria-hidden="true"
+                                            className="
+            absolute
+            inset-0
+            h-full
+            w-full
+            object-cover
+            scale-110
+            blur-2xl
+            opacity-40
+        "
+                                        /> */}
+
+                                        {/* Main Cinematic Image */}
+                                        <img
+                                            src={item.image}
+                                            alt={item.title}
+                                            loading={index === 0 ? "eager" : "lazy"}
+                                            className="
+            relative
+            z-10
+            h-full
+            w-full
+            object-cover
+            object-[center_30%]
+            gpu
+        "
+                                        />
+                                    </>
 
                                     <div
                                         className="
@@ -431,11 +532,10 @@ const HeroSlider = () => {
             w-2
             rounded-full
 
-            ${
-                                    selectedIndex === index
+            ${selectedIndex === index
                                         ? "bg-white shadow-[0_0_20px_rgba(255,255,255,0.9)]"
                                         : "bg-white/50"
-                                }
+                                    }
           `}
                             />
                         </motion.button>
@@ -513,8 +613,8 @@ const HeroSlider = () => {
         [writing-mode:vertical-rl]
       "
                     >
-      Explore
-    </span>
+                        Explore
+                    </span>
                 </div>
             </div>
         </section>
