@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import DestinationCards from "./components/cards/DestinationCards";
 import HeroSlider from "./components/hero/HeroSlider";
 import Navbar from "./components/navbar/Navbar";
@@ -7,6 +9,7 @@ import Footer from "./components/sections/Footer";
 import GallerySection from "./components/sections/GallerySection";
 import MarqueeSection from "./components/sections/MarqueeSection";
 import StatsSection from "./components/sections/StatsSection";
+import StateExplorer from "./components/sections/StateExplorer";
 import StickyShowcase from "./components/sections/StickyShowcase";
 import StorySection from "./components/sections/StorySection";
 import VideoSection from "./components/sections/VideoSection";
@@ -17,48 +20,66 @@ import PageTransition from "./components/transitions/PageTransition";
 
 import AmbientParticles from "./components/ui/AmbientParticles";
 import DynamicLighting from "./components/ui/DynamicLighting";
+import InterestForm from "./components/ui/InterestForm";
 import LoaderScreen from "./components/ui/LoaderScreen";
 import LuxuryCursor from "./components/ui/LuxuryCursor";
 import SmoothScroll from "./components/ui/SmoothScroll";
 
 function App() {
+    const [formOpen, setFormOpen] = useState(false);
+    const [prefilledPlace, setPrefilledPlace] = useState("");
+    const [prefilledState, setPrefilledState] = useState("");
+
+    const openForm = (place = "", state = "") => {
+        setPrefilledPlace(place);
+        setPrefilledState(state);
+        setFormOpen(true);
+    };
+
     return (
         <SmoothScroll>
-            <LoaderScreen/>
+            <LoaderScreen />
+            <PageTransition />
 
-            <PageTransition/>
+            <InterestForm
+                open={formOpen}
+                onClose={() => setFormOpen(false)}
+                prefilledPlace={prefilledPlace}
+                prefilledState={prefilledState}
+            />
 
-            <main className="relative overflow-hidden bg-[#050816] text-white">
-                <DynamicLighting/>
+            <main className="relative overflow-x-hidden bg-[#050816] text-white">
+                <DynamicLighting />
+                <AmbientParticles />
+                <LuxuryCursor />
 
-                <AmbientParticles/>
+                <Navbar onContactClick={() => openForm()} />
 
-                <LuxuryCursor/>
+                <HeroSlider onInterest={() => openForm()} />
 
-                <Navbar/>
+                <MarqueeSection />
 
-                <HeroSlider/>
+                {/* <StorySection /> */}
 
-                <MarqueeSection/>
+                {/* <StickyShowcase /> */}
 
-                <StorySection/>
+                {/* <StatsSection /> */}
 
-                <StickyShowcase/>
+                {/* <GallerySection /> */}
 
-                <StatsSection/>
+                {/* <StateExplorer onInterest={openForm} /> */}
 
-                <GallerySection/>
+                {/* <DestinationCards /> */}
 
-                <DestinationCards/>
+                {/* <VideoSection /> */}
 
-                <VideoSection/>
+                {/* <CTASection onInterest={() => openForm()} /> */}
 
-                <CTASection/>
-                <TestimonialSection/>
+                {/* <TestimonialSection /> */}
 
-                <BookingSection/>
+                <BookingSection onInterest={openForm} />
 
-                <Footer/>
+                <Footer onContactClick={() => openForm()} />
             </main>
         </SmoothScroll>
     );

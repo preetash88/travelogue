@@ -2,30 +2,13 @@
 
 @import "tailwindcss";
 
-/*img,*/
-/*button,*/
-/*h1,*/
-/*p,*/
-/*section,*/
-/*div {*/
-/*    backface-visibility: hidden;*/
-
-/*    transform: translateZ(0);*/
-/*}*/
-
 :root {
     font-family: "Inter", sans-serif;
-
     color: white;
-
     background: #050816;
-
     font-synthesis: none;
-
     text-rendering: optimizeLegibility;
-
     -webkit-font-smoothing: antialiased;
-
     -moz-osx-font-smoothing: grayscale;
 }
 
@@ -37,18 +20,21 @@
 
 html {
     scroll-behavior: auto;
+    overscroll-behavior: none;
 }
 
 body {
     overflow-x: hidden;
-
     background: #050816;
+    position: relative;
+    min-height: 100vh;
+    overscroll-behavior: none;
 }
 
 img {
     user-select: none;
-
     -webkit-user-drag: none;
+    content-visibility: auto;
 }
 
 button {
@@ -59,16 +45,8 @@ button {
 html,
 body {
     width: 100%;
-
     overflow-x: hidden;
-
     background: #050816;
-}
-
-body {
-    position: relative;
-
-    min-height: 100vh;
 }
 
 canvas,
@@ -77,22 +55,92 @@ img {
     contain: paint;
 }
 
+/* ── Glass utility (kept for non-navbar use) ─────────────────────────── */
 .glass {
     background: rgba(255, 255, 255, 0.08);
-
     backdrop-filter: blur(20px);
-
     border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+/* ── Navbar-specific ─────────────────────────────────────────────────── */
+
+/* LAMHE brand — Playfair Display, no background, no blur */
+/* LAMHE brand — Pacifico script (same family as Pexels logo), bolder via stroke */
+.navbar-brand {
+    font-family: "Pacifico", cursive;
+    font-weight: 400; /* Pacifico only has one weight, naturally thick */
+    letter-spacing: 0.02em;
+    line-height: 1;
+    /* paint-order trick makes the stroke go outward, fattening the letterforms */
+    -webkit-text-stroke: 0.6px rgba(255, 255, 255, 0.593);
+    paint-order: stroke fill;
+    text-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.95),
+        0 2px 14px rgba(0, 0, 0, 0.7),
+        0 0 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Subtext under LAMHE */
+.navbar-sub {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-weight: 400;
+    font-size: 0.52rem;
+    letter-spacing: 0.5em;
+    text-transform: uppercase;
+    color: rgb(255, 255, 255);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+    margin-top: 1px;
+}
+
+/* Nav links — no pill, no blur, readable over any hero image */
+.navbar-link {
+    position: relative;
+    font-size: 0.9rem;       /* 13px */
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.75);
+    text-shadow:
+        0 1px 4px rgba(0, 0, 0, 0.85),
+        0 2px 10px rgba(0, 0, 0, 0.6);
+    transition: color 0.25s ease, letter-spacing 0.25s ease;
+    cursor: pointer;
+    background: none;
+    border: none;
+    outline: none;
+    padding: 4px 0;
+}
+
+.navbar-link::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: #22d3ee; /* cyan-400 */
+    transition: width 0.3s ease;
+}
+
+.navbar-link:hover {
+    color: #ffffff;
+    letter-spacing: 0.1em;
+    text-shadow:
+        0 0 12px rgba(34, 211, 238, 0.5),
+        0 1px 4px rgba(0, 0, 0, 0.85);
+}
+
+.navbar-link:hover::after {
+    width: 100%;
+}
+
+/* ── GPU / performance ───────────────────────────────────────────────── */
 .gpu {
     transform: translate3d(0, 0, 0);
-
     backface-visibility: hidden;
-
     will-change: transform;
 }
 
+/* ── Embla carousel ──────────────────────────────────────────────────── */
 .embla {
     overflow: hidden;
 }
@@ -103,173 +151,101 @@ img {
 
 .embla__slide {
     position: relative;
-
     flex: 0 0 100%;
 }
 
+/* ── Grain overlay ───────────────────────────────────────────────────── */
 body::before {
     content: "";
-
     position: fixed;
-
     inset: 0;
-
     pointer-events: none;
-
     opacity: 0.035;
-
     z-index: 999;
-
     background-image: url("https://grainy-gradients.vercel.app/noise.svg");
 }
 
-@media (max-width: 768px) {
-    .glass {
-        backdrop-filter: blur(10px);
-    }
-
-    h1 {
-        letter-spacing: -0.04em;
-    }
-    .sticky {
-        position: relative !important;
-    }
-}
-
+/* ── Ambient glow (top-left) ─────────────────────────────────────────── */
 body::after {
     content: "";
-
     position: fixed;
-
     top: -20%;
-
     left: -10%;
-
     width: 600px;
-
     height: 600px;
-
     background: radial-gradient(
-            circle,
-            rgba(0, 180, 255, 0.12),
-            transparent 70%
+        circle,
+        rgba(0, 180, 255, 0.12),
+        transparent 70%
     );
-
     filter: blur(100px);
-
     z-index: -1;
-
     pointer-events: none;
 }
 
-::-webkit-scrollbar {
-    width: 10px;
-}
+/* ── Scrollbar ───────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: #050816; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
 
-::-webkit-scrollbar-track {
-    background: #050816;
-}
+/* ── Selection ───────────────────────────────────────────────────────── */
+::selection { background: rgba(0, 180, 255, 0.35); color: white; }
 
-::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.15);
+/* ── Tap highlight ───────────────────────────────────────────────────── */
+* { -webkit-tap-highlight-color: transparent; }
 
-    border-radius: 999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.3);
-}
-
-::selection {
-    background: rgba(0, 180, 255, 0.35);
-
-    color: white;
-}
-
-* {
-    -webkit-tap-highlight-color: transparent;
-}
-
-html {
-    overscroll-behavior: none;
-}
-
-body {
-    overscroll-behavior: none;
-}
-
+/* ── Gradient orb (used in CTASection etc) ───────────────────────────── */
 .gradient-orb {
     position: absolute;
-
     width: 600px;
-
     height: 600px;
-
     border-radius: 999px;
-
     background: radial-gradient(
-            circle,
-            rgba(0, 180, 255, 0.18),
-            transparent 70%
+        circle,
+        rgba(0, 180, 255, 0.18),
+        transparent 70%
     );
-
     filter: blur(120px);
-
     pointer-events: none;
 }
 
-body {
-    cursor: none;
-}
+/* ── Cursor ──────────────────────────────────────────────────────────── */
+body { cursor: none; }
 
 @media (max-width: 768px) {
-    body {
-        cursor: auto;
-    }
+    body { cursor: auto; }
 }
 
+/* ── Section defaults ────────────────────────────────────────────────── */
 section {
     position: relative;
-
     isolation: isolate;
+    will-change: opacity, transform;
 }
 
-img {
-    content-visibility: auto;
-}
+/* ── Lenis smooth scroll ─────────────────────────────────────────────── */
+html.lenis { scroll-behavior: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto; }
 
-/*video {*/
-/*    content-visibility: auto;*/
-/*}*/
-
-html.lenis {
-    scroll-behavior: auto;
-}
-
-.lenis.lenis-smooth {
-    scroll-behavior: auto;
-}
-
+/* ── Mobile perf ─────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
+    .glass { backdrop-filter: blur(10px); }
+
+    h1 { letter-spacing: -0.04em; }
+
+    .sticky { position: relative !important; }
+
     .gradient-orb,
     .ambient-light,
-    .particles {
-        display: none;
-    }
+    .particles { display: none; }
 
-    * {
-        animation-duration: 0.6s !important;
-    }
+    * { animation-duration: 0.6s !important; }
 }
 
+/* ── GPU layer ───────────────────────────────────────────────────────── */
 .gpu-layer {
     transform: translate3d(0, 0, 0);
-
     backface-visibility: hidden;
-
     perspective: 1000;
-}
-
-section {
-    will-change: opacity, transform;
 }

@@ -3,9 +3,10 @@ import {type ReactNode, useRef } from "react";
 
 interface Props {
     children: ReactNode;
+    onClick?: () => void;
 }
 
-const MagneticButton = ({ children }: Props) => {
+const MagneticButton = ({ children, onClick }: Props) => {
     const ref = useRef<HTMLButtonElement>(null);
 
     const handleMouseMove = (
@@ -40,6 +41,7 @@ const MagneticButton = ({ children }: Props) => {
             onMouseMove={handleMouseMove}
             onMouseLeave={handleLeave}
             whileTap={{ scale: 0.96 }}
+            onClick={onClick}
             className="
         glass
         rounded-full
