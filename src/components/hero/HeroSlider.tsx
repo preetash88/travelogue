@@ -4,7 +4,7 @@ import MagneticButton from "../ui/MagneticButton";
 
 // Varanasi placeholder — swap this import when you have the real Ganga Aarti image:
 // import varanasi from "../../assets/destinations/varanasi_ghats.avif";
-import varanasi from "../../assets/destinations/benaras_5.avif";
+import varanasi from "../../assets/destinations/ghat_benaras.avif";
 
 interface Props {
     onInterest: () => void;
@@ -14,7 +14,7 @@ const HeroSlider = ({ onInterest }: Props) => {
     const { x, y } = useMousePosition();
 
     return (
-        <section className="relative h-screen w-full overflow-hidden">
+        <section className="relative h-screen w-full overflow-hidden" style={{ marginBottom: 0, paddingBottom: 0 }}>
 
             {/* ── Parallax image layer ───────────────────────────────────────── */}
             <motion.div
@@ -44,7 +44,7 @@ const HeroSlider = ({ onInterest }: Props) => {
             </motion.div>
 
             {/* ── Gradient layers (identical to original) ───────────────────── */}
-            <div className="absolute inset-x-0 bottom-0 z-20 h-[38%] bg-gradient-to-t from-[#050816] via-[#050816]/40 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 z-20 h-[35%] bg-gradient-to-t from-[#050816] via-[#050816]/30 to-transparent" />
 
             <motion.div
                 animate={{ y: [-4, 4, -4], opacity: [0.65, 0.8, 0.65] }}
@@ -81,7 +81,7 @@ const HeroSlider = ({ onInterest }: Props) => {
                     transition={{ duration: 1.4, delay: 0.55, ease: [0.22, 1, 0.36, 1] }}
                     className="relative z-10 text-[5.5rem] font-black leading-none tracking-[-0.04em] text-[#f8f8f8]/90 md:text-[10rem] lg:text-[14rem]"
                 >
-                    
+
                 </motion.h1>
 
                 {/* Tagline */}
@@ -123,7 +123,7 @@ const HeroSlider = ({ onInterest }: Props) => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 1, delay: 2 }}
-                className="absolute bottom-10 left-1/2 z-30 -translate-x-1/2 flex flex-col items-center gap-2"
+                className="absolute bottom-6 left-1/2 z-30 -translate-x-1/2 flex flex-col items-center gap-2"
             >
                 <span className="text-[10px] uppercase tracking-[0.5em] text-white/30">
                     Scroll

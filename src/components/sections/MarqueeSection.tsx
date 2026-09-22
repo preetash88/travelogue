@@ -94,6 +94,7 @@ const MarqueeSection = () => {
             borderBottom: "1px solid rgba(255,255,255,0.07)",
             padding: "0",
             position: "relative",
+            marginTop: 0,
         }}>
             {/* Fade masks on left and right edges */}
             <div style={{

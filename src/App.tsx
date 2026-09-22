@@ -48,7 +48,7 @@ function App() {
                 prefilledState={prefilledState}
             />
 
-            <main className="relative overflow-x-hidden bg-[#050816] text-white">
+            <main className="relative overflow-x-hidden bg-[#050816] text-white" style={{ display: "flex", flexDirection: "column", gap: 0 }}>
                 <DynamicLighting />
                 <AmbientParticles />
                 <LuxuryCursor />
