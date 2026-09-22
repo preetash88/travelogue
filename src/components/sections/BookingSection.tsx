@@ -15,14 +15,7 @@ const BookingSection = ({ onInterest }: Props) => {
                 style={{ maxWidth: "900px" }}
             >
                 {/* Label */}
-                <p style={{
-                    fontSize: "0.65rem",
-                    letterSpacing: "0.6em",
-                    textTransform: "uppercase",
-                    color: "#22d3ee",
-                    marginBottom: "20px",
-                    fontWeight: 600,
-                }}>
+                <p className="mb-4 text-xs uppercase tracking-[0.6em] text-cyan-300">
                     Curated For You
                 </p>
 
