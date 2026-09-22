@@ -146,6 +146,8 @@ const PlaceCarousel = ({
 }) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [autoplay, setAutoplay] = useState(true);
+    // ADD this alongside the other useState declarations:
+    
 
     const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, duration: 35, dragFree: false });
 
@@ -302,6 +304,9 @@ const StateExplorer = ({ onInterest, initialState }: Props) => {
     const [destOpen, setDestOpen] = useState(false);
     const regionDropdownRef = useRef<HTMLDivElement>(null);
     const destDropdownRef = useRef<HTMLDivElement>(null);
+    const [countryOpen, setCountryOpen] = useState(false);
+
+    const countryDropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (initialState) {
@@ -314,6 +319,7 @@ const StateExplorer = ({ onInterest, initialState }: Props) => {
 
     useEffect(() => {
         const handler = (e: MouseEvent) => {
+            if (countryDropdownRef.current && !countryDropdownRef.current.contains(e.target as Node)) setCountryOpen(false);
             if (regionDropdownRef.current && !regionDropdownRef.current.contains(e.target as Node)) setRegionOpen(false);
             if (destDropdownRef.current && !destDropdownRef.current.contains(e.target as Node)) setDestOpen(false);
         };
@@ -321,7 +327,7 @@ const StateExplorer = ({ onInterest, initialState }: Props) => {
         return () => document.removeEventListener("mousedown", handler);
     }, []);
 
-    const handleCountrySelect = (country: Country) => { setSelectedCountry(country); setSelectedRegion(null); setSelectedDestination(null); setRegionOpen(false); setDestOpen(false); };
+    const handleCountrySelect = (country: Country) => { setSelectedCountry(country); setSelectedRegion(null); setSelectedDestination(null); setCountryOpen(false); setRegionOpen(false); setDestOpen(false); };
     const handleRegionSelect = (region: Region) => { setSelectedRegion(region); setSelectedDestination(null); setRegionOpen(false); setDestOpen(false); };
     const handleDestinationSelect = (dest: IndiaPlace) => { setSelectedDestination(dest); setDestOpen(false); };
 
@@ -345,8 +351,13 @@ const StateExplorer = ({ onInterest, initialState }: Props) => {
         display: "flex", alignItems: "center", justifyContent: "space-between",
         gap: "12px", background: "rgba(255,255,255,0.05)",
         border: "1px solid rgba(255,255,255,0.1)", borderRadius: R,
-        padding: "12px 18px", fontSize: "0.82rem", cursor: "pointer",
-        color: "white", transition: "border-color 0.2s", minWidth: "220px",
+        padding: "0 18px",        // remove vertical padding — height controls it
+        fontSize: "0.82rem", cursor: "pointer",
+        color: "white", transition: "border-color 0.2s",
+        width: "220px",
+        minWidth: "220px",
+        height: "52px",           // fixed height — same for all three
+        boxSizing: "border-box" as const,
     };
 
     return (
@@ -372,40 +383,108 @@ const StateExplorer = ({ onInterest, initialState }: Props) => {
                             </span>
                         </h2>
 
-                        <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap", justifyContent: "flex-end" }}>
-                            {/* Country dropdown */}
-                            <div style={{ position: "relative" }}>
-                                <select
-                                    value={selectedCountry.code}
-                                    onChange={e => { const c = COUNTRIES.find(c => c.code === e.target.value); if (c) handleCountrySelect(c); }}
-                                    style={{ ...dropdownBtnStyle, appearance: "none", WebkitAppearance: "none", paddingRight: "36px", background: "rgba(255,255,255,0.05)", backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='rgba(255,255,255,0.4)' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`, backgroundRepeat: "no-repeat", backgroundPosition: "right 14px center", cursor: "pointer", minWidth: "160px" }}
+                        {/* Selectors — fixed 3-slot row, country starts at centre */}
+                        <div style={{
+                            display: "flex",
+                            gap: "80px",
+                            alignItems: "flex-start",
+                            // Push the group so it starts roughly at 50% of the row
+                            marginLeft: "auto",
+                        }}>
+
+                            {/* Slot 1 — Country */}
+                            <div style={{ position: "relative", width: "220px", flexShrink: 0 }} ref={countryDropdownRef}>
+                                <button
+                                    onClick={() => {
+                                        setCountryOpen(!countryOpen);
+                                        setRegionOpen(false);
+                                        setDestOpen(false);
+                                    }}
+                                    style={dropdownBtnStyle}
                                 >
-                                    {COUNTRIES.map(c => (
-                                        <option key={c.code} value={c.code} style={{ background: "#0a0e1c" }}>
-                                            {c.flag} {c.name}{!c.available ? " (Soon)" : ""}
-                                        </option>
-                                    ))}
-                                </select>
+                                    <div style={{ textAlign: "left", minWidth: 0, overflow: "hidden", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                                        <p style={{ fontSize: "0.48rem", letterSpacing: "0.35em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: "3px", lineHeight: 1 }}>
+                                            Country
+                                        </p>
+                                        <p style={{ fontSize: "0.82rem", color: "white", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", lineHeight: 1 }}>
+                                            {selectedCountry.flag} {selectedCountry.name}
+                                        </p>
+                                    </div>
+                                    <motion.span animate={{ rotate: countryOpen ? 180 : 0 }} transition={{ duration: 0.2 }} style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.75rem", flexShrink: 0 }}>↓</motion.span>
+                                </button>
+
+                                <AnimatePresence>
+                                    {countryOpen && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: -6, scaleY: 0.95 }}
+                                            animate={{ opacity: 1, y: 0, scaleY: 1 }}
+                                            exit={{ opacity: 0, y: -6, scaleY: 0.95 }}
+                                            transition={{ duration: 0.2 }}
+                                            style={{ position: "absolute", left: 0, top: "calc(100% + 8px)", width: "220px", zIndex: 100, background: "rgba(10,14,28,0.98)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: R, overflow: "hidden", boxShadow: "0 20px 50px rgba(0,0,0,0.6)", transformOrigin: "top" }}
+                                        >
+                                            {COUNTRIES.map(c => (
+                                                <button
+                                                    key={c.code}
+                                                    onClick={() => { handleCountrySelect(c); setCountryOpen(false); }}
+                                                    style={{
+                                                        width: "100%", textAlign: "left", padding: "10px 16px",
+                                                        background: selectedCountry.code === c.code ? "rgba(34,211,238,0.08)" : "transparent",
+                                                        border: "none", borderBottom: "1px solid rgba(255,255,255,0.05)",
+                                                        cursor: c.available ? "pointer" : "not-allowed",
+                                                        opacity: c.available ? 1 : 0.45,
+                                                        transition: "background 0.15s",
+                                                    }}
+                                                    onMouseEnter={e => { if (c.available && selectedCountry.code !== c.code) e.currentTarget.style.background = "rgba(255,255,255,0.05)"; }}
+                                                    onMouseLeave={e => { if (selectedCountry.code !== c.code) e.currentTarget.style.background = "transparent"; }}
+                                                >
+                                                    <p style={{ fontSize: "0.8rem", color: selectedCountry.code === c.code ? "#22d3ee" : "rgba(255,255,255,0.75)", fontWeight: selectedCountry.code === c.code ? 600 : 400 }}>
+                                                        {c.flag} {c.name}
+                                                    </p>
+                                                    {!c.available && (
+                                                        <p style={{ fontSize: "0.55rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)", marginTop: "2px" }}>
+                                                            Coming Soon
+                                                        </p>
+                                                    )}
+                                                </button>
+                                            ))}
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
                             </div>
 
-                            {/* Region dropdown */}
-                            <div style={{ position: "relative" }} ref={regionDropdownRef}>
+                            {/* Slot 2 — Region */}
+                            <div style={{ position: "relative", width: "220px", flexShrink: 0 }} ref={regionDropdownRef}>
                                 <button onClick={() => { setRegionOpen(!regionOpen); setDestOpen(false); }} style={dropdownBtnStyle}>
-                                    <div style={{ textAlign: "left" }}>
-                                        <p style={{ fontSize: "0.5rem", letterSpacing: "0.35em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: "2px" }}>
-                                            {selectedCountry.regionLabel}
+                                    <div style={{ textAlign: "left", minWidth: 0, overflow: "hidden", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                                        <p style={{
+                                            fontSize: "0.48rem",
+                                            letterSpacing: "0.35em",
+                                            textTransform: "uppercase",
+                                            color: "rgba(255,255,255,0.3)",
+                                            marginBottom: "3px",
+                                            lineHeight: 1,
+                                        }}>
+                                            {selectedCountry.regionLabel}   {/* or "Destination" */}
                                         </p>
-                                        <p style={{ fontSize: "0.82rem", color: selectedRegion ? "white" : "rgba(255,255,255,0.45)" }}>
+                                        <p style={{
+                                            fontSize: "0.82rem",
+                                            color: selectedRegion ? "white" : "rgba(255,255,255,0.45)",
+                                            overflow: "hidden",
+                                            textOverflow: "ellipsis",
+                                            whiteSpace: "nowrap",
+                                            lineHeight: 1,
+                                        }}>
                                             {selectedRegion ? selectedRegion.name : `Select ${selectedCountry.regionLabel}`}
                                         </p>
                                     </div>
-                                    <motion.span animate={{ rotate: regionOpen ? 180 : 0 }} transition={{ duration: 0.2 }} style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.75rem" }}>↓</motion.span>
+                                    <motion.span animate={{ rotate: regionOpen ? 180 : 0 }} transition={{ duration: 0.2 }} style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.75rem", flexShrink: 0 }}>↓</motion.span>
                                 </button>
+
                                 <AnimatePresence>
                                     {regionOpen && (
                                         <motion.div
                                             initial={{ opacity: 0, y: -6, scaleY: 0.95 }} animate={{ opacity: 1, y: 0, scaleY: 1 }} exit={{ opacity: 0, y: -6, scaleY: 0.95 }} transition={{ duration: 0.2 }}
-                                            style={{ position: "absolute", right: 0, top: "calc(100% + 8px)", width: "260px", zIndex: 100, background: "rgba(10,14,28,0.98)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: R, overflow: "hidden", maxHeight: "280px", overflowY: "auto", boxShadow: "0 20px 50px rgba(0,0,0,0.6)", transformOrigin: "top", scrollbarWidth: "thin", scrollbarColor: "rgba(255,255,255,0.12) transparent" }}
+                                            style={{ position: "absolute", left: 0, top: "calc(100% + 8px)", width: "260px", zIndex: 100, background: "rgba(10,14,28,0.98)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: R, overflow: "hidden", maxHeight: "280px", overflowY: "auto", boxShadow: "0 20px 50px rgba(0,0,0,0.6)", transformOrigin: "top", scrollbarWidth: "thin", scrollbarColor: "rgba(255,255,255,0.12) transparent" }}
                                             onWheel={e => e.stopPropagation()}
                                         >
                                             {selectedCountry.regions.map(r => (
@@ -423,50 +502,75 @@ const StateExplorer = ({ onInterest, initialState }: Props) => {
                                 </AnimatePresence>
                             </div>
 
-                            {/* Destination dropdown */}
-                            <AnimatePresence>
-                                {selectedRegion && selectedRegion.places.length > 0 && (
-                                    <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: 0.25 }} style={{ position: "relative" }} ref={destDropdownRef}>
-                                        <button onClick={() => { setDestOpen(!destOpen); setRegionOpen(false); }} style={dropdownBtnStyle}>
-                                            <div style={{ textAlign: "left" }}>
-                                                <p style={{ fontSize: "0.5rem", letterSpacing: "0.35em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: "2px" }}>Destination</p>
-                                                <p style={{ fontSize: "0.82rem", color: selectedDestination ? "white" : "rgba(255,255,255,0.45)" }}>
-                                                    {selectedDestination ? selectedDestination.name.split("(")[0].trim() : "All Destinations"}
-                                                </p>
-                                            </div>
-                                            <motion.span animate={{ rotate: destOpen ? 180 : 0 }} transition={{ duration: 0.2 }} style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.75rem" }}>↓</motion.span>
-                                        </button>
-                                        <AnimatePresence>
-                                            {destOpen && (
-                                                <motion.div
-                                                    initial={{ opacity: 0, y: -6, scaleY: 0.95 }} animate={{ opacity: 1, y: 0, scaleY: 1 }} exit={{ opacity: 0, y: -6, scaleY: 0.95 }} transition={{ duration: 0.2 }}
-                                                    style={{ position: "absolute", right: 0, top: "calc(100% + 8px)", width: "260px", zIndex: 100, background: "rgba(10,14,28,0.98)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: R, overflow: "hidden", boxShadow: "0 20px 50px rgba(0,0,0,0.6)", transformOrigin: "top" }}
-                                                    onWheel={e => e.stopPropagation()}
+                            {/* Slot 3 — Destination: ALWAYS in the layout, just opacity+pointer-events toggle */}
+                            <div
+                                style={{
+                                    position: "relative",
+                                    width: "220px",
+                                    flexShrink: 0,
+                                    // Invisible but still occupies space when no region selected
+                                    opacity: selectedRegion && selectedRegion.places.length > 0 ? 1 : 0,
+                                    pointerEvents: selectedRegion && selectedRegion.places.length > 0 ? "auto" : "none",
+                                    transition: "opacity 0.3s ease",
+                                }}
+                                ref={destDropdownRef}
+                            >
+                                <button onClick={() => { setDestOpen(!destOpen); setRegionOpen(false); }} style={dropdownBtnStyle}>
+                                    <div style={{ textAlign: "left", minWidth: 0, overflow: "hidden", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                                        <p style={{
+                                            fontSize: "0.48rem",
+                                            letterSpacing: "0.35em",
+                                            textTransform: "uppercase",
+                                            color: "rgba(255,255,255,0.3)",
+                                            marginBottom: "3px",
+                                            lineHeight: 1,
+                                        }}>
+                                            Destination
+                                        </p>
+                                        <p style={{
+                                            fontSize: "0.82rem",
+                                            color: selectedRegion ? "white" : "rgba(255,255,255,0.45)",
+                                            overflow: "hidden",
+                                            textOverflow: "ellipsis",
+                                            whiteSpace: "nowrap",
+                                            lineHeight: 1,
+                                        }}>
+                                            {selectedDestination ? selectedDestination.name.split("(")[0].trim() : "All Destinations"}
+                                        </p>
+                                    </div>
+                                    <motion.span animate={{ rotate: destOpen ? 180 : 0 }} transition={{ duration: 0.2 }} style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.75rem", flexShrink: 0 }}>↓</motion.span>
+                                </button>
+
+                                <AnimatePresence>
+                                    {destOpen && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: -6, scaleY: 0.95 }} animate={{ opacity: 1, y: 0, scaleY: 1 }} exit={{ opacity: 0, y: -6, scaleY: 0.95 }} transition={{ duration: 0.2 }}
+                                            style={{ position: "absolute", left: 0, top: "calc(100% + 8px)", width: "260px", zIndex: 100, background: "rgba(10,14,28,0.98)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: R, overflow: "hidden", maxHeight: "260px", overflowY: "auto", boxShadow: "0 20px 50px rgba(0,0,0,0.6)", transformOrigin: "top", scrollbarWidth: "thin", scrollbarColor: "rgba(255,255,255,0.12) transparent" }}
+                                            onWheel={e => e.stopPropagation()}
+                                        >
+                                            <button onClick={() => { setSelectedDestination(null); setDestOpen(false); }}
+                                                style={{ width: "100%", textAlign: "left", padding: "10px 16px", background: !selectedDestination ? "rgba(34,211,238,0.08)" : "transparent", border: "none", borderBottom: "1px solid rgba(255,255,255,0.05)", cursor: "pointer" }}
+                                                onMouseEnter={e => { if (selectedDestination) e.currentTarget.style.background = "rgba(255,255,255,0.05)"; }}
+                                                onMouseLeave={e => { if (selectedDestination) e.currentTarget.style.background = "transparent"; }}
+                                            >
+                                                <p style={{ fontSize: "0.8rem", color: !selectedDestination ? "#22d3ee" : "rgba(255,255,255,0.75)", fontWeight: !selectedDestination ? 600 : 400 }}>All Destinations</p>
+                                                <p style={{ fontSize: "0.58rem", color: "rgba(255,255,255,0.25)", marginTop: "2px" }}>Show full carousel</p>
+                                            </button>
+                                            {selectedRegion?.places.map(dest => (
+                                                <button key={dest.name} onClick={() => handleDestinationSelect(dest)}
+                                                    style={{ width: "100%", textAlign: "left", padding: "10px 16px", background: selectedDestination?.name === dest.name ? "rgba(34,211,238,0.08)" : "transparent", border: "none", borderBottom: "1px solid rgba(255,255,255,0.05)", cursor: "pointer", transition: "background 0.15s" }}
+                                                    onMouseEnter={e => { if (selectedDestination?.name !== dest.name) e.currentTarget.style.background = "rgba(255,255,255,0.05)"; }}
+                                                    onMouseLeave={e => { if (selectedDestination?.name !== dest.name) e.currentTarget.style.background = "transparent"; }}
                                                 >
-                                                    <button onClick={() => { setSelectedDestination(null); setDestOpen(false); }}
-                                                        style={{ width: "100%", textAlign: "left", padding: "10px 16px", background: !selectedDestination ? "rgba(34,211,238,0.08)" : "transparent", border: "none", borderBottom: "1px solid rgba(255,255,255,0.05)", cursor: "pointer" }}
-                                                        onMouseEnter={e => { if (selectedDestination) e.currentTarget.style.background = "rgba(255,255,255,0.05)"; }}
-                                                        onMouseLeave={e => { if (selectedDestination) e.currentTarget.style.background = "transparent"; }}
-                                                    >
-                                                        <p style={{ fontSize: "0.8rem", color: !selectedDestination ? "#22d3ee" : "rgba(255,255,255,0.75)", fontWeight: !selectedDestination ? 600 : 400 }}>All Destinations</p>
-                                                        <p style={{ fontSize: "0.58rem", color: "rgba(255,255,255,0.25)", marginTop: "2px" }}>Show full carousel</p>
-                                                    </button>
-                                                    {selectedRegion.places.map(dest => (
-                                                        <button key={dest.name} onClick={() => handleDestinationSelect(dest)}
-                                                            style={{ width: "100%", textAlign: "left", padding: "10px 16px", background: selectedDestination?.name === dest.name ? "rgba(34,211,238,0.08)" : "transparent", border: "none", borderBottom: "1px solid rgba(255,255,255,0.05)", cursor: "pointer", transition: "background 0.15s" }}
-                                                            onMouseEnter={e => { if (selectedDestination?.name !== dest.name) e.currentTarget.style.background = "rgba(255,255,255,0.05)"; }}
-                                                            onMouseLeave={e => { if (selectedDestination?.name !== dest.name) e.currentTarget.style.background = "transparent"; }}
-                                                        >
-                                                            <p style={{ fontSize: "0.8rem", color: selectedDestination?.name === dest.name ? "#22d3ee" : "rgba(255,255,255,0.75)", fontWeight: selectedDestination?.name === dest.name ? 600 : 400 }}>{dest.name.split("(")[0].trim()}</p>
-                                                            <p style={{ fontSize: "0.58rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)", marginTop: "2px" }}>{dest.type} · {dest.bestTime}</p>
-                                                        </button>
-                                                    ))}
-                                                </motion.div>
-                                            )}
-                                        </AnimatePresence>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
+                                                    <p style={{ fontSize: "0.8rem", color: selectedDestination?.name === dest.name ? "#22d3ee" : "rgba(255,255,255,0.75)", fontWeight: selectedDestination?.name === dest.name ? 600 : 400 }}>{dest.name.split("(")[0].trim()}</p>
+                                                    <p style={{ fontSize: "0.58rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.25)", marginTop: "2px" }}>{dest.type} · {dest.bestTime}</p>
+                                                </button>
+                                            ))}
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+
                         </div>
                     </div>
 
