@@ -249,3 +249,9 @@ html.lenis { scroll-behavior: auto; }
     backface-visibility: hidden;
     perspective: 1000;
 }
+
+/* ── Indian tricolour text shimmer ──────────────────────────────────────── */
+@keyframes tricolourShimmer {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+}
