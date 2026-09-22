@@ -314,13 +314,12 @@ const StateExplorer = ({ onInterest, initialState }: Props) => {
         <section id="state-explorer" style={{ position: "relative" }}>
 
             {/* ── Selector bar ─────────────────────────────────────────────── */}
-            <div style={{ position: "relative", zIndex: 40, padding: "64px 48px" }}>
+            <div style={{ position: "relative", zIndex: 40, padding: "64px 48px 32px" }}>
                 <motion.div
                     initial={{ opacity: 0, y: 60 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 1 }}
                     viewport={{ once: true }}
-                    style={{ maxWidth: "1280px", margin: "0 auto" }}
                 >
                     <p className="mb-4 text-xs uppercase tracking-[0.6em] text-cyan-300">
                         EXPLORE BY STATE / UT
@@ -339,7 +338,19 @@ const StateExplorer = ({ onInterest, initialState }: Props) => {
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
                                 onClick={() => setIsOpen(!isOpen)}
-                                className="glass flex items-center gap-4 rounded-full px-8 py-4 text-sm min-w-[280px] justify-between"
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "16px",
+                                    background: "rgba(255,255,255,0.06)",
+                                    border: "1px solid rgba(255,255,255,0.1)",
+                                    borderRadius: "999px",
+                                    padding: "14px 24px",
+                                    fontSize: "0.83rem",
+                                    width: "280px",
+                                    justifyContent: "space-between",
+                                    cursor: "pointer",
+                                }}
                             >
                                 <div className="text-left">
                                     <p className="text-[10px] uppercase tracking-[0.3em] text-white/40">
@@ -431,9 +442,9 @@ const StateExplorer = ({ onInterest, initialState }: Props) => {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.5 }}
-                        style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 48px 96px" }}
+                        style={{ padding: "0 48px 96px" }}
                     >
-                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "16px" }}>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "14px" }}>
                             {sortedStates.slice(0, 8).map((s, i) => (
                                 <motion.button
                                     key={s.state}
@@ -443,7 +454,16 @@ const StateExplorer = ({ onInterest, initialState }: Props) => {
                                     viewport={{ once: true }}
                                     whileHover={{ y: -6, scale: 1.02 }}
                                     onClick={() => handleSelect(s)}
-                                    className="glass rounded-[1.5rem] p-6 text-left group"
+                                    style={{
+                                        background: "rgba(255,255,255,0.05)",
+                                        border: "1px solid rgba(255,255,255,0.08)",
+                                        borderRadius: "16px",
+                                        padding: "20px",
+                                        textAlign: "left",
+                                        cursor: "pointer",
+                                        overflow: "hidden",
+                                        minWidth: 0,           // prevents grid blowout
+                                    }}
                                 >
                                     <p className="text-xs uppercase tracking-[0.3em] text-cyan-300/60 mb-2">
                                         {s.capital}
@@ -451,7 +471,16 @@ const StateExplorer = ({ onInterest, initialState }: Props) => {
                                     <h3 className="font-bold text-lg group-hover:text-white transition-colors">
                                         {s.state}
                                     </h3>
-                                    <p className="text-white/35 text-xs mt-2 leading-relaxed line-clamp-2">
+                                    <p style={{
+                                        fontSize: "0.72rem",
+                                        color: "rgba(255,255,255,0.32)",
+                                        marginTop: "6px",
+                                        lineHeight: 1.5,
+                                        display: "-webkit-box",
+                                        WebkitLineClamp: 2,
+                                        WebkitBoxOrient: "vertical",
+                                        overflow: "hidden",
+                                    }}>
                                         {s.tagline}
                                     </p>
                                     <p className="text-cyan-400/50 text-[10px] uppercase tracking-[0.3em] mt-4 group-hover:text-cyan-300 transition-colors">
