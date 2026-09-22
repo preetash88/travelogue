@@ -39,7 +39,7 @@ const Navbar = ({ onContactClick }: Props) => {
                             marginTop: "2px",
                         }}
                     >
-                        Memories of India
+                        Moments that Matter
                     </span>
                 </div>
 

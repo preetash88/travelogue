@@ -41,7 +41,7 @@ const Footer = ({ onContactClick }: Props) => {
                                 color: "rgba(255,255,255,0.35)",
                                 marginTop: "5px",
                             }}>
-                                Memories of India
+                                Moments that Matter
                             </span>
                         </div>
                         <p style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.32)", lineHeight: 1.7 }}>
