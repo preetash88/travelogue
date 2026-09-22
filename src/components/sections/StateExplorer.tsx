@@ -4,8 +4,14 @@ import { useState, useEffect, useRef } from "react";
 import { uniqueIndiaStates, type IndiaPlace, type IndiaState } from "../../utils/travelData";
 import MagneticButton from "../ui/MagneticButton";
 
+// Add this after your imports, before the Props interface:
+const sortedStates = [...uniqueIndiaStates].sort((a, b) =>
+    a.state.localeCompare(b.state)
+);
+
 interface Props {
     onInterest: (place: string, state: string) => void;
+    initialState?: IndiaState | null;   // ← new
 }
 
 // ── Inner carousel (Embla) — the original HeroSlider design, repurposed ──────
@@ -176,11 +182,10 @@ const PlaceCarousel = ({
                                 {isActive && (
                                     <div className="absolute inset-0 rounded-[2rem] bg-cyan-300/10 blur-2xl" />
                                 )}
-                                <div className={`relative overflow-hidden rounded-[2rem] transition-all duration-700 ${
-                                    isActive
-                                        ? "h-[180px] w-[120px] border border-white/30 shadow-[0_0_50px_rgba(255,255,255,0.15)]"
-                                        : "h-[110px] w-[82px] border border-white/8"
-                                }`}>
+                                <div className={`relative overflow-hidden rounded-[2rem] transition-all duration-700 ${isActive
+                                    ? "h-[180px] w-[120px] border border-white/30 shadow-[0_0_50px_rgba(255,255,255,0.15)]"
+                                    : "h-[110px] w-[82px] border border-white/8"
+                                    }`}>
                                     <img
                                         src={place.image}
                                         alt={place.name}
@@ -224,11 +229,10 @@ const PlaceCarousel = ({
                                     opacity: selectedIndex === index ? 1 : 0.5,
                                 }}
                                 transition={{ duration: 0.4 }}
-                                className={`h-2 w-2 rounded-full ${
-                                    selectedIndex === index
-                                        ? "bg-white shadow-[0_0_20px_rgba(255,255,255,0.9)]"
-                                        : "bg-white/50"
-                                }`}
+                                className={`h-2 w-2 rounded-full ${selectedIndex === index
+                                    ? "bg-white shadow-[0_0_20px_rgba(255,255,255,0.9)]"
+                                    : "bg-white/50"
+                                    }`}
                             />
                         </motion.button>
                     ))}
@@ -262,9 +266,8 @@ const PlaceCarousel = ({
                     <button
                         key={index}
                         onClick={() => { emblaApi?.scrollTo(index); setAutoplay(false); }}
-                        className={`h-1.5 rounded-full transition-all duration-300 ${
-                            selectedIndex === index ? "w-8 bg-white" : "w-1.5 bg-white/30"
-                        }`}
+                        className={`h-1.5 rounded-full transition-all duration-300 ${selectedIndex === index ? "w-8 bg-white" : "w-1.5 bg-white/30"
+                            }`}
                     />
                 ))}
             </div>
@@ -289,10 +292,17 @@ const PlaceCarousel = ({
 };
 
 // ── StateExplorer wrapper ─────────────────────────────────────────────────────
-const StateExplorer = ({ onInterest }: Props) => {
+const StateExplorer = ({ onInterest, initialState }: Props) => {
     const [selectedState, setSelectedState] = useState<IndiaState | null>(null);
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
+
+    // When picker sends a state, auto-select it
+    useEffect(() => {
+        if (initialState) {
+            setSelectedState(initialState);
+        }
+    }, [initialState]);
 
     // Default India — no state pre-selected, user must pick
     const handleSelect = (state: IndiaState) => {
@@ -301,16 +311,16 @@ const StateExplorer = ({ onInterest }: Props) => {
     };
 
     return (
-        <section id="state-explorer" className="relative">
+        <section id="state-explorer" style={{ position: "relative" }}>
 
             {/* ── Selector bar ─────────────────────────────────────────────── */}
-            <div className="relative z-40 px-6 py-16">
+            <div style={{ position: "relative", zIndex: 40, padding: "64px 48px" }}>
                 <motion.div
                     initial={{ opacity: 0, y: 60 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 1 }}
                     viewport={{ once: true }}
-                    className="mx-auto max-w-7xl"
+                    style={{ maxWidth: "1280px", margin: "0 auto" }}
                 >
                     <p className="mb-4 text-xs uppercase tracking-[0.6em] text-cyan-300">
                         EXPLORE BY STATE / UT
@@ -358,16 +368,15 @@ const StateExplorer = ({ onInterest }: Props) => {
                                         style={{ transformOrigin: "top" }}
                                         className="absolute right-0 top-full mt-3 w-[320px] glass rounded-[1.5rem] overflow-hidden max-h-[55vh] overflow-y-auto shadow-2xl z-50"
                                     >
-                                        {uniqueIndiaStates.map((s) => (
+                                        {sortedStates.map((s) => (
                                             <motion.button
                                                 key={s.state}
                                                 whileHover={{ backgroundColor: "rgba(255,255,255,0.07)" }}
                                                 onClick={() => handleSelect(s)}
-                                                className={`w-full text-left px-6 py-4 transition-colors duration-200 border-b border-white/5 last:border-0 ${
-                                                    selectedState?.state === s.state
-                                                        ? "text-cyan-300"
-                                                        : "text-white/70"
-                                                }`}
+                                                className={`w-full text-left px-6 py-4 transition-colors duration-200 border-b border-white/5 last:border-0 ${selectedState?.state === s.state
+                                                    ? "text-cyan-300"
+                                                    : "text-white/70"
+                                                    }`}
                                             >
                                                 <p className="font-semibold text-sm">{s.state}</p>
                                                 <p className="text-[10px] text-white/30 mt-0.5 uppercase tracking-[0.2em]">
@@ -422,10 +431,10 @@ const StateExplorer = ({ onInterest }: Props) => {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.5 }}
-                        className="mx-auto max-w-7xl px-6 pb-24"
+                        style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 48px 96px" }}
                     >
-                        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                            {uniqueIndiaStates.slice(0, 8).map((s, i) => (
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "16px" }}>
+                            {sortedStates.slice(0, 8).map((s, i) => (
                                 <motion.button
                                     key={s.state}
                                     initial={{ opacity: 0, y: 30 }}
@@ -459,7 +468,7 @@ const StateExplorer = ({ onInterest }: Props) => {
                             className="mt-6 text-center"
                         >
                             <p className="text-white/25 text-xs tracking-[0.3em] uppercase">
-                                + {uniqueIndiaStates.length - 8} more states & union territories in the dropdown
+                                + {sortedStates.length - 8} more states & union territories in the dropdown
                             </p>
                         </motion.div>
                     </motion.div>

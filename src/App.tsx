@@ -1,39 +1,42 @@
 import { useState } from "react";
 
-import DestinationCards from "./components/cards/DestinationCards";
 import HeroSlider from "./components/hero/HeroSlider";
 import Navbar from "./components/navbar/Navbar";
-
-import CTASection from "./components/sections/CTASection";
-import Footer from "./components/sections/Footer";
-import GallerySection from "./components/sections/GallerySection";
 import MarqueeSection from "./components/sections/MarqueeSection";
-import StatsSection from "./components/sections/StatsSection";
 import StateExplorer from "./components/sections/StateExplorer";
-import StickyShowcase from "./components/sections/StickyShowcase";
-import StorySection from "./components/sections/StorySection";
-import VideoSection from "./components/sections/VideoSection";
 import BookingSection from "./components/sections/BookingSection";
-import TestimonialSection from "./components/sections/TestimonialSection";
+import Footer from "./components/sections/Footer";
 
 import PageTransition from "./components/transitions/PageTransition";
-
 import AmbientParticles from "./components/ui/AmbientParticles";
 import DynamicLighting from "./components/ui/DynamicLighting";
 import InterestForm from "./components/ui/InterestForm";
 import LoaderScreen from "./components/ui/LoaderScreen";
 import LuxuryCursor from "./components/ui/LuxuryCursor";
 import SmoothScroll from "./components/ui/SmoothScroll";
+import DestinationPicker from "./components/ui/DestinationPicker";
+
+import { type IndiaState } from "./utils/travelData";
 
 function App() {
     const [formOpen, setFormOpen] = useState(false);
     const [prefilledPlace, setPrefilledPlace] = useState("");
     const [prefilledState, setPrefilledState] = useState("");
 
+    // Destination picker state
+    const [pickerOpen, setPickerOpen] = useState(false);
+
+    // State selected via picker — passed into StateExplorer
+    const [explorerState, setExplorerState] = useState<IndiaState | null>(null);
+
     const openForm = (place = "", state = "") => {
         setPrefilledPlace(place);
         setPrefilledState(state);
         setFormOpen(true);
+    };
+
+    const handleExplore = (_country: string, state: IndiaState) => {
+        setExplorerState(state);
     };
 
     return (
@@ -48,12 +51,22 @@ function App() {
                 prefilledState={prefilledState}
             />
 
-            <main className="relative overflow-x-hidden bg-[#050816] text-white" style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+            <DestinationPicker
+                open={pickerOpen}
+                onClose={() => setPickerOpen(false)}
+                onExplore={handleExplore}
+            />
+
+            <main className="relative overflow-x-hidden bg-[#050816] text-white"
+                style={{ display: "flex", flexDirection: "column", gap: 0 }}>
                 <DynamicLighting />
                 <AmbientParticles />
                 <LuxuryCursor />
 
-                <Navbar onContactClick={() => openForm()} />
+                <Navbar 
+                onContactClick={() => openForm()}
+                onDestinationsClick={() => setPickerOpen(true)}
+                 />
 
                 <HeroSlider onInterest={() => openForm()} />
 
@@ -67,7 +80,10 @@ function App() {
 
                 {/* <GallerySection /> */}
 
-                {/* <StateExplorer onInterest={openForm} /> */}
+                <StateExplorer 
+                onInterest={openForm}
+                initialState={explorerState}
+                 />
 
                 {/* <DestinationCards /> */}
 
