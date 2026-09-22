@@ -72,7 +72,7 @@ img {
     letter-spacing: 0.02em;
     line-height: 1;
     /* paint-order trick makes the stroke go outward, fattening the letterforms */
-    -webkit-text-stroke: 0.6px rgba(255, 255, 255, 0.593);
+    -webkit-text-stroke: 0.6px rgb(255, 255, 255);
     paint-order: stroke fill;
     text-shadow:
         0 1px 3px rgba(0, 0, 0, 0.95),
@@ -83,12 +83,12 @@ img {
 /* Subtext under LAMHE */
 .navbar-sub {
     font-family: "Cormorant Garamond", Georgia, serif;
-    font-weight: 400;
-    font-size: 0.52rem;
+    font-weight: 900;
+    font-size: 0.60rem;
     letter-spacing: 0.5em;
     text-transform: uppercase;
     color: rgb(255, 255, 255);
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.86);
     margin-top: 1px;
 }
 
