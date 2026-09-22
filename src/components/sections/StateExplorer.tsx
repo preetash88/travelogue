@@ -354,8 +354,8 @@ const StateExplorer = ({ onInterest, initialState }: Props) => {
         padding: "0 18px",        // remove vertical padding — height controls it
         fontSize: "0.82rem", cursor: "pointer",
         color: "white", transition: "border-color 0.2s",
-        width: "220px",
-        minWidth: "220px",
+        width: "260px",
+        minWidth: "260px",
         height: "52px",           // fixed height — same for all three
         boxSizing: "border-box" as const,
     };
@@ -393,7 +393,7 @@ const StateExplorer = ({ onInterest, initialState }: Props) => {
                         }}>
 
                             {/* Slot 1 — Country */}
-                            <div style={{ position: "relative", width: "220px", flexShrink: 0 }} ref={countryDropdownRef}>
+                            <div style={{ position: "relative", width: "260px", flexShrink: 0 }} ref={countryDropdownRef}>
                                 <button
                                     onClick={() => {
                                         setCountryOpen(!countryOpen);
@@ -420,7 +420,7 @@ const StateExplorer = ({ onInterest, initialState }: Props) => {
                                             animate={{ opacity: 1, y: 0, scaleY: 1 }}
                                             exit={{ opacity: 0, y: -6, scaleY: 0.95 }}
                                             transition={{ duration: 0.2 }}
-                                            style={{ position: "absolute", left: 0, top: "calc(100% + 8px)", width: "220px", zIndex: 100, background: "rgba(10,14,28,0.98)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: R, overflow: "hidden", boxShadow: "0 20px 50px rgba(0,0,0,0.6)", transformOrigin: "top" }}
+                                            style={{ position: "absolute", left: 0, top: "calc(100% + 8px)", width: "260px", zIndex: 100, background: "rgba(10,14,28,0.98)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: R, overflow: "hidden", boxShadow: "0 20px 50px rgba(0,0,0,0.6)", transformOrigin: "top" }}
                                         >
                                             {COUNTRIES.map(c => (
                                                 <button
@@ -453,7 +453,7 @@ const StateExplorer = ({ onInterest, initialState }: Props) => {
                             </div>
 
                             {/* Slot 2 — Region */}
-                            <div style={{ position: "relative", width: "220px", flexShrink: 0 }} ref={regionDropdownRef}>
+                            <div style={{ position: "relative", width: "260px", flexShrink: 0 }} ref={regionDropdownRef}>
                                 <button onClick={() => { setRegionOpen(!regionOpen); setDestOpen(false); }} style={dropdownBtnStyle}>
                                     <div style={{ textAlign: "left", minWidth: 0, overflow: "hidden", display: "flex", flexDirection: "column", justifyContent: "center" }}>
                                         <p style={{
@@ -506,7 +506,7 @@ const StateExplorer = ({ onInterest, initialState }: Props) => {
                             <div
                                 style={{
                                     position: "relative",
-                                    width: "220px",
+                                    width: "260px",
                                     flexShrink: 0,
                                     // Invisible but still occupies space when no region selected
                                     opacity: selectedRegion && selectedRegion.places.length > 0 ? 1 : 0,
