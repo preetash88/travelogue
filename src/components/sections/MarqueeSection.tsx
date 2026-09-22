@@ -90,7 +90,7 @@ const MarqueeSection = () => {
     return (
         <section style={{
             overflow: "hidden",
-            borderTop: "1px solid rgba(255,255,255,0.07)",
+            borderTop: "none",
             borderBottom: "1px solid rgba(255,255,255,0.07)",
             padding: "0",
             position: "relative",
