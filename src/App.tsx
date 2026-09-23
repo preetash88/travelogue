@@ -6,7 +6,7 @@ import BookingSection from "./components/sections/BookingSection";
 import Footer from "./components/sections/Footer";
 
 import PageTransition from "./components/transitions/PageTransition";
-import RouteTransition from "./components/transitions/RouteTransition";
+import RouteTransition, { RouteGate } from "./components/transitions/RouteTransition";
 import AmbientParticles from "./components/ui/AmbientParticles";
 import DynamicLighting from "./components/ui/DynamicLighting";
 import InterestForm from "./components/ui/InterestForm";
@@ -21,10 +21,10 @@ import StatePage from "./pages/StatePage";
 import { type IndiaState } from "./utils/travelData";
 
 function App() {
-    const [formOpen, setFormOpen] = useState(false);
+    const [formOpen, setFormOpen]           = useState(false);
     const [prefilledPlace, setPrefilledPlace] = useState("");
     const [prefilledState, setPrefilledState] = useState("");
-    const [pickerOpen, setPickerOpen] = useState(false);
+    const [pickerOpen, setPickerOpen]       = useState(false);
     const [explorerState, setExplorerState] = useState<IndiaState | null>(null);
 
     const openForm = (place = "", state = "") => {
@@ -42,7 +42,13 @@ function App() {
             <LoaderScreen />
             <PageTransition />
 
-            {/* ── Fires on every route change — curtain + scroll reset ── */}
+            {/*
+             * RouteTransition owns a Context that tracks whether the page
+             * is allowed to be visible. RouteGate reads that context and
+             * sets visibility:hidden on the entire routes/content block
+             * while the curtain is sliding up — so the new page mounts
+             * and renders silently behind the curtain, never flashing.
+             */}
             <RouteTransition />
 
             <InterestForm
@@ -57,34 +63,37 @@ function App() {
                 onExplore={handleExplore}
             />
 
-            <main className="relative overflow-x-hidden bg-[#050816] text-white">
-                <DynamicLighting />
-                <AmbientParticles />
-                <LuxuryCursor />
+            <DynamicLighting />
+            <AmbientParticles />
+            <LuxuryCursor />
 
-                <Navbar
-                    onContactClick={() => openForm()}
-                    onDestinationsClick={() => setPickerOpen(true)}
-                />
+            <Navbar
+                onContactClick={() => openForm()}
+                onDestinationsClick={() => setPickerOpen(true)}
+            />
 
-                <Routes>
-                    <Route
-                        path="/"
-                        element={<HomePage onInterest={openForm} explorerState={explorerState} />}
-                    />
-                    <Route
-                        path="/in/:stateSlug"
-                        element={<StatePage onInterest={openForm} />}
-                    />
-                    <Route
-                        path="/in/:stateSlug/:destSlug"
-                        element={<StatePage onInterest={openForm} />}
-                    />
-                </Routes>
+            {/* RouteGate hides everything below until curtain is fully up */}
+            <RouteGate>
+                <main className="relative overflow-x-hidden bg-[#050816] text-white">
+                    <Routes>
+                        <Route
+                            path="/"
+                            element={<HomePage onInterest={openForm} explorerState={explorerState} />}
+                        />
+                        <Route
+                            path="/in/:stateSlug"
+                            element={<StatePage onInterest={openForm} />}
+                        />
+                        <Route
+                            path="/in/:stateSlug/:destSlug"
+                            element={<StatePage onInterest={openForm} />}
+                        />
+                    </Routes>
 
-                <BookingSection onInterest={openForm} />
-                <Footer onContactClick={() => openForm()} />
-            </main>
+                    <BookingSection onInterest={openForm} />
+                    <Footer onContactClick={() => openForm()} />
+                </main>
+            </RouteGate>
         </SmoothScroll>
     );
 }

@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 import { uniqueIndiaStates, type IndiaPlace, type IndiaState } from "../../utils/travelData";
 import { useNavigate } from "react-router-dom";
+import { showCover } from "../../utils/routeBlock";
 
 // Self-contained slug helper — same logic as StatePage so URLs always match
 const toSlug = (name: string): string =>
@@ -170,6 +171,9 @@ const StateExplorer = ({ onInterest: _onInterest, initialState }: Props) => {
         if (!selectedRegion) return;
         const countrySlug = selectedCountry.code.toLowerCase();   // "in"
         const stateSlug = toSlug(selectedRegion.name);
+        // Inject cover SYNCHRONOUSLY before navigate() so it's up
+        // before React processes the route change
+        showCover();
         if (selectedDestination) {
             navigate(`/${countrySlug}/${stateSlug}/${toSlug(selectedDestination.name)}`);
         } else {
