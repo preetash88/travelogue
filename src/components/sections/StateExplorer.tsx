@@ -2,7 +2,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 import { uniqueIndiaStates, type IndiaPlace, type IndiaState } from "../../utils/travelData";
 import { useNavigate } from "react-router-dom";
-import { showCover } from "../../utils/routeBlock";
 
 // Self-contained slug helper — same logic as StatePage so URLs always match
 const toSlug = (name: string): string =>
@@ -106,6 +105,8 @@ const StateExplorer = ({ onInterest: _onInterest, initialState }: Props) => {
     const [selectedCountry, setSelectedCountry] = useState<Country>(COUNTRIES[0]);
     const [selectedRegion, setSelectedRegion] = useState<Region | null>(null);
     const [selectedDestination, setSelectedDestination] = useState<IndiaPlace | null>(null);
+    // Card selection is tracked independently from the dropdown
+    const [cardRegion, setCardRegion] = useState<Region | null>(null);
 
     const [countryOpen, setCountryOpen] = useState(false);
     const [regionOpen, setRegionOpen] = useState(false);
@@ -149,6 +150,7 @@ const StateExplorer = ({ onInterest: _onInterest, initialState }: Props) => {
         setSelectedCountry(country);
         setSelectedRegion(null);
         setSelectedDestination(null);
+        setCardRegion(null);
         setCountryOpen(false);
         setRegionOpen(false);
         setDestOpen(false);
@@ -171,9 +173,6 @@ const StateExplorer = ({ onInterest: _onInterest, initialState }: Props) => {
         if (!selectedRegion) return;
         const countrySlug = selectedCountry.code.toLowerCase();   // "in"
         const stateSlug = toSlug(selectedRegion.name);
-        // Inject cover SYNCHRONOUSLY before navigate() so it's up
-        // before React processes the route change
-        showCover();
         if (selectedDestination) {
             navigate(`/${countrySlug}/${stateSlug}/${toSlug(selectedDestination.name)}`);
         } else {
@@ -184,6 +183,7 @@ const StateExplorer = ({ onInterest: _onInterest, initialState }: Props) => {
     const handleReset = () => {
         setSelectedRegion(null);
         setSelectedDestination(null);
+        setCardRegion(null);
         setCountryOpen(false);
         setRegionOpen(false);
         setDestOpen(false);
@@ -416,9 +416,9 @@ const StateExplorer = ({ onInterest: _onInterest, initialState }: Props) => {
                         <CardItem
                             key={region.name}
                             region={region}
-                            isSelected={selectedRegion?.name === region.name}
+                            isSelected={cardRegion?.name === region.name}
                             available={selectedCountry.available}
-                            onClick={() => handleRegionSelect(region)}
+                            onClick={() => { setCardRegion(region); handleRegionSelect(region); }}
                         />
                     ))}
                 </div>
@@ -428,6 +428,13 @@ const StateExplorer = ({ onInterest: _onInterest, initialState }: Props) => {
                     </p>
                 )}
             </div>
+
+            {/* Subtle separator before BookingSection */}
+            <div style={{
+                margin: "0 48px",
+                height: "1px",
+                background: "linear-gradient(to right, transparent, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.08) 80%, transparent)",
+            }} />
 
         </section>
     );
