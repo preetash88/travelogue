@@ -5,6 +5,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { uniqueIndiaStates, type IndiaPlace, type IndiaState } from "../utils/travelData";
 import useMousePosition from "../hook/useMousePosition";
 import MagneticButton from "../components/ui/MagneticButton";
+import DestinationStories from "../components/sections/DestinationStories";
 
 const AUTOPLAY_DELAY = 5000;
 
@@ -77,7 +78,28 @@ const StatePage = ({ onInterest }: Props) => {
         ? Math.max(0, items.findIndex(item => toSlug(item.place.name) === destSlug))
         : 0;
 
-    return <StateSlider items={items} state={stateData} initialIndex={initialIndex} onInterest={onInterest} navigate={navigate} />;
+    const scrollToBooking = () => {
+        // BookingSection has no id yet — scroll to it by finding the last <section>
+        // inside <main> that contains "Curated" text (its heading), or fall back
+        // to near-bottom of page
+        const allSections = Array.from(document.querySelectorAll("main section"));
+        const booking = allSections.find(s => s.textContent?.includes("Plan Your")) as HTMLElement
+            ?? allSections[allSections.length - 1] as HTMLElement;
+        if (booking) {
+            if (window.__lenis) {
+                (window.__lenis as any).scrollTo(booking, { offset: -60, duration: 1.4 });
+            } else {
+                booking.scrollIntoView({ behavior: "smooth" });
+            }
+        }
+    };
+
+    return (
+        <>
+            <StateSlider items={items} state={stateData} initialIndex={initialIndex} onInterest={onInterest} navigate={navigate} />
+            <DestinationStories state={stateData} onExploreMore={scrollToBooking} />
+        </>
+    );
 };
 
 // ── StateSlider — the HeroSlider adapted for state destinations ───────────────
@@ -127,10 +149,10 @@ const StateSlider = ({
         return () => emblaApi.off("pointerDown", stop);
     }, [emblaApi]);
 
-    // If initialIndex changes (different destSlug route), jump to it
+    // Jump to correct slide on mount (destSlug deep link)
     useEffect(() => {
-        if (emblaApi && !scrolledRef.current) {
-            emblaApi.scrollTo(initialIndex, true); // true = instant jump
+        if (emblaApi && initialIndex > 0 && !scrolledRef.current) {
+            emblaApi.scrollTo(initialIndex, true); // true = no animation, instant
             setSelectedIndex(initialIndex);
             scrolledRef.current = true;
         }
