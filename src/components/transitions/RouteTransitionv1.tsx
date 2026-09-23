@@ -78,16 +78,6 @@ const RouteTransition = () => {
         if (prevPath.current === location.pathname) return;
         prevPath.current = location.pathname;
 
-        // Going home — skip the transition entirely, just reset scroll
-        if (location.pathname === "/") {
-            if (window.__lenis) {
-                window.__lenis.scrollTo(0, { immediate: true });
-            } else {
-                window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
-            }
-            return;
-        }
-
         setContent(getContent(location.pathname));
         setPhase("in");
 
