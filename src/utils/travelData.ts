@@ -621,3 +621,21 @@ export const uniqueIndiaStates = indiaStates.filter((s) => {
     seen.add(key);
     return true;
 });
+
+// Add these at the very bottom of travelData.ts
+
+export const toSlug = (name: string): string =>
+    name
+        .toLowerCase()
+        .replace(/[()]/g, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "");
+
+// Maps slug → IndiaState for the router
+export const stateBySlug = Object.fromEntries(
+    uniqueIndiaStates.map(s => [toSlug(s.state), s])
+);
+
+// Maps slug → IndiaPlace, scoped within a state
+export const placeBySlug = (state: IndiaState, slug: string): IndiaPlace | undefined =>
+    state.places.find(p => toSlug(p.name) === slug);

@@ -1,9 +1,7 @@
 import { useState } from "react";
+import { Routes, Route } from "react-router-dom";
 
-import HeroSlider from "./components/hero/HeroSlider";
 import Navbar from "./components/navbar/Navbar";
-import MarqueeSection from "./components/sections/MarqueeSection";
-import StateExplorer from "./components/sections/StateExplorer";
 import BookingSection from "./components/sections/BookingSection";
 import Footer from "./components/sections/Footer";
 
@@ -16,17 +14,16 @@ import LuxuryCursor from "./components/ui/LuxuryCursor";
 import SmoothScroll from "./components/ui/SmoothScroll";
 import DestinationPicker from "./components/ui/DestinationPicker";
 
+import HomePage from "./pages/HomePage";
+import StatePage from "./pages/StatePage";
+
 import { type IndiaState } from "./utils/travelData";
 
 function App() {
     const [formOpen, setFormOpen] = useState(false);
     const [prefilledPlace, setPrefilledPlace] = useState("");
     const [prefilledState, setPrefilledState] = useState("");
-
-    // Destination picker state
     const [pickerOpen, setPickerOpen] = useState(false);
-
-    // State selected via picker — passed into StateExplorer
     const [explorerState, setExplorerState] = useState<IndiaState | null>(null);
 
     const openForm = (place = "", state = "") => {
@@ -50,51 +47,38 @@ function App() {
                 prefilledPlace={prefilledPlace}
                 prefilledState={prefilledState}
             />
-
             <DestinationPicker
                 open={pickerOpen}
                 onClose={() => setPickerOpen(false)}
                 onExplore={handleExplore}
             />
 
-            <main className="relative overflow-x-hidden bg-[#050816] text-white"
-                style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-                <DynamicLighting />
-                <AmbientParticles />
-                <LuxuryCursor />
+            <DynamicLighting />
+            <AmbientParticles />
+            <LuxuryCursor />
 
-                <Navbar 
+            <Navbar
                 onContactClick={() => openForm()}
                 onDestinationsClick={() => setPickerOpen(true)}
-                 />
+            />
 
-                <HeroSlider onInterest={() => openForm()} />
-
-                <MarqueeSection />
-
-                {/* <StorySection /> */}
-
-                {/* <StickyShowcase /> */}
-
-                {/* <StatsSection /> */}
-
-                {/* <GallerySection /> */}
-
-                <StateExplorer 
-                onInterest={openForm}
-                initialState={explorerState}
-                 />
-
-                {/* <DestinationCards /> */}
-
-                {/* <VideoSection /> */}
-
-                {/* <CTASection onInterest={() => openForm()} /> */}
-
-                {/* <TestimonialSection /> */}
+            <main className="relative overflow-x-hidden bg-[#050816] text-white">
+                <Routes>
+                    <Route
+                        path="/"
+                        element={<HomePage onInterest={openForm} explorerState={explorerState} />}
+                    />
+                    <Route
+                        path="/in/:stateSlug"
+                        element={<StatePage onInterest={openForm} />}
+                    />
+                    <Route
+                        path="/in/:stateSlug/:destSlug"
+                        element={<StatePage onInterest={openForm} />}
+                    />
+                </Routes>
 
                 <BookingSection onInterest={openForm} />
-
                 <Footer onContactClick={() => openForm()} />
             </main>
         </SmoothScroll>

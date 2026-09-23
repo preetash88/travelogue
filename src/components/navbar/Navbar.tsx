@@ -1,14 +1,33 @@
 import { Menu, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import MobileMenu from "./MobileMenu";
 
 interface Props {
     onContactClick: () => void;
+    onDestinationsClick?: () => void;
 }
 
-const Navbar = ({ onContactClick }: Props) => {
+const Navbar = ({ onContactClick, onDestinationsClick }: Props) => {
     const [open, setOpen] = useState(false);
+    const navigate = useNavigate();
+
+    const goHome = () => {
+        // Navigate to root — React Router unmounts StatePage and mounts HomePage
+        // which resets all state naturally since it's a fresh component mount
+        navigate("/");
+        // Also scroll to top in case we're already on home
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
+    const goToExplorer = () => {
+        // If on a sub-page, navigate home first then scroll
+        navigate("/");
+        setTimeout(() => {
+            document.getElementById("state-explorer")?.scrollIntoView({ behavior: "smooth" });
+        }, 300);
+    };
 
     return (
         <>
@@ -21,8 +40,14 @@ const Navbar = ({ onContactClick }: Props) => {
                 className="fixed left-0 top-0 z-50 flex w-full items-center justify-between"
                 style={{ padding: "10px 40px 0 25px" }}
             >
-                {/* ── Brand ───────────────────────────────────────────── */}
-                <div className="flex flex-col" style={{ paddingTop: "4px" }}>
+                {/* ── Brand — click navigates home and resets everything ── */}
+                <div
+                    className="flex flex-col"
+                    style={{ paddingTop: "4px", cursor: "pointer" }}
+                    onClick={goHome}
+                    role="link"
+                    aria-label="Go to home"
+                >
                     <span
                         className="navbar-brand text-gray-200"
                         style={{ fontSize: "2.7rem" }}
@@ -47,11 +72,7 @@ const Navbar = ({ onContactClick }: Props) => {
                 <div className="hidden items-center gap-10 md:flex">
                     <button
                         className="navbar-link"
-                        onClick={() =>
-                            document
-                                .getElementById("state-explorer")
-                                ?.scrollIntoView({ behavior: "smooth" })
-                        }
+                        onClick={onDestinationsClick ?? goToExplorer}
                     >
                         Destinations
                     </button>
