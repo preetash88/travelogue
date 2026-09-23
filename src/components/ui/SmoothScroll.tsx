@@ -1,8 +1,13 @@
 import Lenis from "lenis";
-import {type ReactNode, useEffect } from "react";
+import { type ReactNode, useEffect } from "react";
 
 interface Props {
     children: ReactNode;
+}
+
+// Expose lenis globally so RouteTransition can call scrollTo(0) on route change
+declare global {
+    interface Window { __lenis?: Lenis; }
 }
 
 const SmoothScroll = ({ children }: Props) => {
@@ -13,9 +18,10 @@ const SmoothScroll = ({ children }: Props) => {
             touchMultiplier: 2,
         });
 
+        window.__lenis = lenis;
+
         function raf(time: number) {
             lenis.raf(time);
-
             requestAnimationFrame(raf);
         }
 
@@ -23,6 +29,7 @@ const SmoothScroll = ({ children }: Props) => {
 
         return () => {
             lenis.destroy();
+            window.__lenis = undefined;
         };
     }, []);
 

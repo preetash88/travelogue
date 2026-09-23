@@ -6,6 +6,7 @@ import BookingSection from "./components/sections/BookingSection";
 import Footer from "./components/sections/Footer";
 
 import PageTransition from "./components/transitions/PageTransition";
+import RouteTransition from "./components/transitions/RouteTransition";
 import AmbientParticles from "./components/ui/AmbientParticles";
 import DynamicLighting from "./components/ui/DynamicLighting";
 import InterestForm from "./components/ui/InterestForm";
@@ -41,6 +42,9 @@ function App() {
             <LoaderScreen />
             <PageTransition />
 
+            {/* ── Fires on every route change — curtain + scroll reset ── */}
+            <RouteTransition />
+
             <InterestForm
                 open={formOpen}
                 onClose={() => setFormOpen(false)}
@@ -53,16 +57,16 @@ function App() {
                 onExplore={handleExplore}
             />
 
-            <DynamicLighting />
-            <AmbientParticles />
-            <LuxuryCursor />
-
-            <Navbar
-                onContactClick={() => openForm()}
-                onDestinationsClick={() => setPickerOpen(true)}
-            />
-
             <main className="relative overflow-x-hidden bg-[#050816] text-white">
+                <DynamicLighting />
+                <AmbientParticles />
+                <LuxuryCursor />
+
+                <Navbar
+                    onContactClick={() => openForm()}
+                    onDestinationsClick={() => setPickerOpen(true)}
+                />
+
                 <Routes>
                     <Route
                         path="/"
