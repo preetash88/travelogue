@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 import { uniqueIndiaStates, type IndiaPlace, type IndiaState } from "../../utils/travelData";
 import { useNavigate } from "react-router-dom";
+import { showCover } from "../../utils/routeBlock";
 
 // Self-contained slug helper — same logic as StatePage so URLs always match
 const toSlug = (name: string): string =>
@@ -418,7 +419,14 @@ const StateExplorer = ({ onInterest: _onInterest, initialState }: Props) => {
                             region={region}
                             isSelected={cardRegion?.name === region.name}
                             available={selectedCountry.available}
-                            onClick={() => { setCardRegion(region); handleRegionSelect(region); }}
+                            onClick={() => {
+                                setCardRegion(region);
+                                handleRegionSelect(region);
+                                // Navigate directly to the state page on card click
+                                const stateSlug = toSlug(region.name);
+                                showCover();
+                                navigate(`/${selectedCountry.code.toLowerCase()}/${stateSlug}`);
+                            }}
                         />
                     ))}
                 </div>
