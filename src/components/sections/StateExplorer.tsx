@@ -28,14 +28,13 @@ const dropdownListStyle: React.CSSProperties = {
     left: 0,
     top: "calc(100% + 8px)",
     width: "260px",
-    zIndex: 9999,
-    background: "rgb(12,16,32)",
-    border: "1px solid rgba(255,255,255,0.12)",
+    zIndex: 99999,
+    background: "#0a0d1a",  // fully opaque — no alpha
+    border: "1px solid rgba(255,255,255,0.15)",
     borderRadius: R,
     overflow: "hidden",
-    boxShadow: "0 24px 60px rgba(0,0,0,0.85)",
+    boxShadow: "0 24px 60px rgba(0,0,0,0.95)",
     transformOrigin: "top",
-    isolation: "isolate",
     pointerEvents: "all",
 };
 
@@ -316,26 +315,30 @@ const StateExplorer = ({ onInterest, initialState }: Props) => {
         <section id="state-explorer" style={{ position: "relative" }}>
 
             <div style={{ padding: "64px 48px 32px" }}>
-                <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.9 }} viewport={{ once: true }}>
-
                     <p className="mb-4 text-xs uppercase tracking-[0.6em] text-cyan-300">
                         Explore by Region
                     </p>
 
                     <div style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-start", justifyContent: "space-between", gap: "32px", marginBottom: "28px" }}>
 
-                        {/* Title */}
-                        <h2 style={{ fontSize: "clamp(3rem, 8vw, 6rem)", fontWeight: 900, lineHeight: 1, letterSpacing: "-0.02em", color: "white", display: "block", marginBottom: "4px" }}>
+                        {/* Title — only this animates, NOT the selector */}
+                        <motion.h2
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8 }}
+                            viewport={{ once: true }}
+                            style={{ fontSize: "clamp(3rem, 8vw, 6rem)", fontWeight: 900, lineHeight: 1, letterSpacing: "-0.02em", color: "white", display: "block", marginBottom: "4px" }}
+                        >
                             Discover
                             <span style={{ fontFamily: "'Pacifico', cursive", fontSize: "clamp(2.5rem, 7vw, 5rem)", WebkitTextStroke: "0.5px white", color: "white", display: "block", lineHeight: 1.2 }}>lamhe</span>
-                        </h2>
+                        </motion.h2>
 
-                        {/* ── Selector container ──────────────────────────── */}
-                        <div style={{ marginLeft: "auto", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "20px", padding: "28px 32px", display: "flex", flexDirection: "column", gap: "20px", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", minWidth: "900px" }}>
+                        {/* ── Selector container — NO motion wrapper, no stacking context ── */}
+                        <div style={{ marginLeft: "auto", background: "rgb(10,13,26)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "20px", padding: "28px 32px", display: "flex", flexDirection: "column", gap: "20px", minWidth: "900px" }}>
 
                             {/* Top row: label + reset */}
                             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                                <p style={{ fontSize: "0.55rem", letterSpacing: "0.45em", textTransform: "uppercase", color: "rgba(34,211,238,0.7)", fontWeight: 600 }}>
+                                <p style={{ fontSize: "0.59rem", letterSpacing: "0.45em", textTransform: "uppercase", color: "rgb(34, 211, 238)", fontWeight: 900 }}>
                                     Find Your Destination
                                 </p>
                                 <AnimatePresence>
@@ -498,7 +501,6 @@ const StateExplorer = ({ onInterest, initialState }: Props) => {
                         </p>
                     </motion.div>
 
-                </motion.div>
             </div>
 
             {/* ── Carousel or card grid — driven by COMMITTED state only ────── */}
@@ -516,7 +518,8 @@ const StateExplorer = ({ onInterest, initialState }: Props) => {
                     </motion.div>
                 ) : (
                     <motion.div key={selectedCountry.code} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }} style={{ padding: "0 48px 80px" }}>
-                        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", marginBottom: "20px" }}>
+                        {/* Disable card hover when any dropdown is open to prevent bleed-through */}
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", marginBottom: "20px", pointerEvents: (countryOpen || regionOpen || destOpen) ? "none" : "auto" }}>
                             {visibleCards.map((region) => (
                                 <CardItem
                                     key={region.name}
