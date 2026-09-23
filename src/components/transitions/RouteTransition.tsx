@@ -1,104 +1,104 @@
-import { useEffect, useLayoutEffect, useRef, useState, createContext, useContext, type ReactNode } from "react";
+/**
+ * RouteTransition.tsx
+ *
+ * Architecture fix: the Provider must be an ANCESTOR of RouteGate,
+ * not a sibling. We export TransitionProvider to wrap everything in App,
+ * and useTransitionReady for RouteGate to consume it.
+ *
+ * App.tsx structure:
+ *   <TransitionProvider>       ← provides context
+ *     <RouteTransition />      ← drives the curtain + sets context
+ *     <RouteGate>              ← reads context, hides/shows content
+ *       <main>...</main>
+ *     </RouteGate>
+ *   </TransitionProvider>
+ */
+import {
+    useLayoutEffect, useRef, useState,
+    createContext, useContext, type ReactNode,
+} from "react";
 import { useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { uniqueIndiaStates } from "../../utils/travelData";
 import varanasi from "../../assets/destinations/ghat_benaras.avif";
-import { hideCover } from "../../utils/routeBlock";
+import { showCover, hideCover } from "../../utils/routeBlock";
 
 declare global {
     interface Window { __lenis?: { scrollTo: (n: number, o?: object) => void }; }
 }
 
-const toSlug = (name: string) =>
-    name.toLowerCase().replace(/[()]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+// ── Slug + content helpers ────────────────────────────────────────────────────
+const toSlug = (n: string) =>
+    n.toLowerCase().replace(/[()]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
 const stateImageBySlug: Record<string, string> = Object.fromEntries(
     uniqueIndiaStates.map(s => [toSlug(s.state), s.places[0]?.image ?? varanasi])
 );
 
-interface TransitionContent { eyebrow: string; heading: string; image: string; }
+interface Content { eyebrow: string; heading: string; image: string; }
 
-function getContent(pathname: string): TransitionContent {
+function getContent(pathname: string): Content {
     const parts = pathname.split("/").filter(Boolean);
     if (!parts.length || pathname === "/")
         return { eyebrow: "Returning to", heading: "Home", image: varanasi };
     if (parts[0] === "in" && parts[1]) {
-        const stateSlug = parts[1];
-        const destSlug  = parts[2];
-        const img       = stateImageBySlug[stateSlug] ?? varanasi;
-        const stateName = stateSlug.split("-").map(w => w[0].toUpperCase() + w.slice(1)).join(" ");
-        if (destSlug) {
-            const destName = destSlug.split("-").map(w => w[0].toUpperCase() + w.slice(1)).join(" ");
-            const state = uniqueIndiaStates.find(s => toSlug(s.state) === stateSlug);
-            const place = state?.places.find(p => toSlug(p.name) === destSlug);
-            return { eyebrow: "Heading to", heading: destName, image: place?.image ?? img };
+        const ss = parts[1], ds = parts[2];
+        const img = stateImageBySlug[ss] ?? varanasi;
+        const sName = ss.split("-").map(w => w[0].toUpperCase() + w.slice(1)).join(" ");
+        if (ds) {
+            const dName = ds.split("-").map(w => w[0].toUpperCase() + w.slice(1)).join(" ");
+            const state = uniqueIndiaStates.find(s => toSlug(s.state) === ss);
+            const place = state?.places.find(p => toSlug(p.name) === ds);
+            return { eyebrow: "Heading to", heading: dName, image: place?.image ?? img };
         }
-        return { eyebrow: "Exploring", heading: stateName, image: img };
+        return { eyebrow: "Exploring", heading: sName, image: img };
     }
     const last = parts[parts.length - 1];
-    return {
-        eyebrow: "Loading",
-        heading: last.split("-").map(w => w[0].toUpperCase() + w.slice(1)).join(" "),
-        image: varanasi,
-    };
+    return { eyebrow: "Loading", heading: last.split("-").map(w => w[0].toUpperCase() + w.slice(1)).join(" "), image: varanasi };
 }
 
-// ── Context + RouteGate ───────────────────────────────────────────────────────
+// ── Context ───────────────────────────────────────────────────────────────────
 interface Ctx { ready: boolean; }
 const TransitionContext = createContext<Ctx>({ ready: true });
 
-export const RouteGate = ({ children }: { children: ReactNode }) => {
-    const { ready } = useContext(TransitionContext);
-    return (
-        <div style={{ opacity: ready ? 1 : 0, pointerEvents: ready ? "auto" : "none" }}>
-            {children}
-        </div>
-    );
-};
+// ── TransitionProvider — must be ancestor of BOTH RouteTransition + RouteGate ─
+interface ProviderProps { children: ReactNode; }
 
-// ── RouteTransition ───────────────────────────────────────────────────────────
-const RouteTransition = () => {
-    const location  = useLocation();
-    const [phase, setPhase]     = useState<"idle" | "hold" | "out">("idle");
-    const [ready, setReady]     = useState(true);
-    const [content, setContent] = useState<TransitionContent>({
+export const TransitionProvider = ({ children }: ProviderProps) => {
+    const location = useLocation();
+    const [ready, setReady] = useState(true);
+    const [phase, setPhase] = useState<"idle" | "hold" | "out">("idle");
+    const [content, setContent] = useState<Content>({
         eyebrow: "Loading", heading: "destinations", image: varanasi,
     });
     const prevPath = useRef<string | null>(null);
 
     useLayoutEffect(() => {
+        // Skip first mount
         if (prevPath.current === null) { prevPath.current = location.pathname; return; }
         if (prevPath.current === location.pathname) return;
         prevPath.current = location.pathname;
 
-        // Home — no curtain, just scroll reset
+        // Going home — no curtain
         if (location.pathname === "/") {
             if (window.__lenis) window.__lenis.scrollTo(0, { immediate: true });
             else window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
             return;
         }
 
-        // showCover() was called synchronously in handleExplore before navigate().
-        // useLayoutEffect fires before paint, so the cover is guaranteed to be
-        // visible before the browser renders anything new.
-
-        // Scroll while covered
-        if (window.__lenis) window.__lenis.scrollTo(0, { immediate: true });
-        else window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
-
-        // Hide RouteGate and start React curtain
+        // ── Cover is already up (showCover called in handleExplore) ──────────
+        // useLayoutEffect fires before paint — hide the gate before browser draws
         setReady(false);
         setContent(getContent(location.pathname));
         setPhase("hold");
 
-        // Hand off from raw cover → React curtain after two paint frames
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-                hideCover();
-            });
-        });
+        // Reset scroll while hidden
+        if (window.__lenis) window.__lenis.scrollTo(0, { immediate: true });
+        else window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
 
-        // Reveal
+        // React curtain now renders. After 2 frames it's painted → remove raw cover
+        requestAnimationFrame(() => requestAnimationFrame(() => hideCover()));
+
         const tOut  = setTimeout(() => { setReady(true); setPhase("out"); }, 950);
         const tIdle = setTimeout(() => setPhase("idle"), 1750);
         return () => { clearTimeout(tOut); clearTimeout(tIdle); hideCover(); };
@@ -106,6 +106,9 @@ const RouteTransition = () => {
 
     return (
         <TransitionContext.Provider value={{ ready }}>
+            {children}
+
+            {/* Curtain lives inside the Provider so it can read context if needed */}
             <AnimatePresence>
                 {phase !== "idle" && (
                     <motion.div
@@ -148,13 +151,10 @@ const RouteTransition = () => {
                             gap: "16px",
                         }}>
                             <motion.p
-                                initial={{ opacity: 0, y: 12 }}
-                                animate={{ opacity: 1, y: 0 }}
+                                initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.4, delay: 0.15 }}
                                 style={{ fontFamily: "'Pacifico', cursive", fontSize: "2.2rem", color: "rgba(255,255,255,0.9)", WebkitTextStroke: "0.5px white", margin: 0, lineHeight: 1 }}
-                            >
-                                lamhe
-                            </motion.p>
+                            >lamhe</motion.p>
                             <motion.div
                                 initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
                                 transition={{ duration: 0.45, delay: 0.25, ease: "easeOut" }}
@@ -164,16 +164,12 @@ const RouteTransition = () => {
                                 initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                                 transition={{ duration: 0.3, delay: 0.32 }}
                                 style={{ fontSize: "0.52rem", letterSpacing: "0.5em", textTransform: "uppercase", color: "rgba(255,255,255,0.38)", margin: 0 }}
-                            >
-                                {content.eyebrow}
-                            </motion.p>
+                            >{content.eyebrow}</motion.p>
                             <motion.p
                                 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.4, delay: 0.38 }}
                                 style={{ fontSize: "clamp(1.4rem, 3vw, 2.2rem)", fontWeight: 800, letterSpacing: "-0.02em", color: "white", margin: 0, textAlign: "center", maxWidth: "480px", lineHeight: 1.15 }}
-                            >
-                                {content.heading}
-                            </motion.p>
+                            >{content.heading}</motion.p>
                             <motion.div
                                 initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                                 transition={{ duration: 0.3, delay: 0.48 }}
@@ -195,4 +191,16 @@ const RouteTransition = () => {
     );
 };
 
+// ── RouteGate — reads context, hides content while transition is active ────────
+export const RouteGate = ({ children }: { children: ReactNode }) => {
+    const { ready } = useContext(TransitionContext);
+    return (
+        <div style={{ opacity: ready ? 1 : 0, pointerEvents: ready ? "auto" : "none" }}>
+            {children}
+        </div>
+    );
+};
+
+// ── RouteTransition — kept as a no-op default export so existing imports work ─
+const RouteTransition = () => null;
 export default RouteTransition;
