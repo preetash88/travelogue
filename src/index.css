@@ -34,7 +34,7 @@ body {
 img {
     user-select: none;
     -webkit-user-drag: none;
-    content-visibility: auto;
+    /*content-visibility: auto;*/
 }
 
 button {
@@ -154,16 +154,16 @@ img {
     flex: 0 0 100%;
 }
 
-/* ── Grain overlay ───────────────────────────────────────────────────── */
-body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.035;
-    z-index: 999;
-    background-image: url("https://grainy-gradients.vercel.app/noise.svg");
-}
+/*!* ── Grain overlay ───────────────────────────────────────────────────── *!*/
+/*body::before {*/
+/*    content: "";*/
+/*    position: fixed;*/
+/*    inset: 0;*/
+/*    pointer-events: none;*/
+/*    opacity: 0.035;*/
+/*    z-index: 999;*/
+/*    background-image: url("https://grainy-gradients.vercel.app/noise.svg");*/
+/*}*/
 
 /* ── Ambient glow (top-left) ─────────────────────────────────────────── */
 body::after {
@@ -221,7 +221,37 @@ body { cursor: none; }
 section {
     position: relative;
     isolation: isolate;
-    will-change: opacity, transform;
+    /*will-change: opacity, transform;*/
+}
+
+/* ── Hero Ken Burns drift (compositor-only, gentle zoom — no panning) ── */
+@keyframes kenburns {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.04); }
+}
+.kenburns {
+    animation: kenburns 20s ease-in-out infinite;
+    will-change: transform;
+}
+.kenburns--paused { animation-play-state: paused; }
+
+/* ── Hero title: shrinks so the longest word always fits the screen ── */
+.hero-title {
+    letter-spacing: -0.05em;
+    --avail: calc(100vw - 3rem);
+    font-size: max(2.25rem, min(6rem, calc(var(--avail) / var(--wem)), calc(42vh / var(--words))));
+}
+@media (min-width: 768px) {
+    .hero-title {
+        --avail: calc(100vw - 6rem);
+        font-size: max(3rem, min(9rem, calc(var(--avail) / var(--wem)), calc(42vh / var(--words))));
+    }
+}
+@media (min-width: 1024px) {
+    .hero-title {
+        --avail: calc(100vw - 20rem);
+        font-size: max(3.5rem, min(13rem, calc(var(--avail) / var(--wem)), calc(42vh / var(--words))));
+    }
 }
 
 /* ── Lenis smooth scroll ─────────────────────────────────────────────── */

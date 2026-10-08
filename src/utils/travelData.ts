@@ -135,6 +135,7 @@ export interface IndiaPlace {
     tagline: string;
     description: string;
     image: string; // local import or URL
+    focus?: string; // optional crop focus, e.g. "center 35%"
     bestTime: string;
     type: string; // e.g. "Heritage", "Nature", "Spiritual"
 }

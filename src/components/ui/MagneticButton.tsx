@@ -1,12 +1,12 @@
-import { motion } from "framer-motion";
-import {type ReactNode, useRef } from "react";
+import {motion} from "framer-motion";
+import {type ReactNode, useRef} from "react";
 
 interface Props {
     children: ReactNode;
     onClick?: () => void;
 }
 
-const MagneticButton = ({ children, onClick }: Props) => {
+const MagneticButton = ({children, onClick}: Props) => {
     const ref = useRef<HTMLButtonElement>(null);
 
     const handleMouseMove = (
@@ -40,10 +40,12 @@ const MagneticButton = ({ children, onClick }: Props) => {
             ref={ref}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleLeave}
-            whileTap={{ scale: 0.96 }}
+            whileTap={{scale: 0.96}}
             onClick={onClick}
             className="
-        glass
+        border
+        border-white/10
+        bg-white/10
         rounded-full
         px-8
         py-4

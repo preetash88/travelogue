@@ -14,9 +14,9 @@ export default defineConfig({
 
     rollupOptions: {
       output: {
-        manualChunks: {
-          motion: ["framer-motion"],
-          gsap: ["gsap"],
+        manualChunks(id: string) {
+          if (id.includes("node_modules/framer-motion")) return "motion";
+          if (id.includes("node_modules/gsap")) return "gsap";
         },
       },
     },

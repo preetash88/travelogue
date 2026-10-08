@@ -7,8 +7,8 @@ import Footer from "./components/sections/Footer";
 
 import PageTransition from "./components/transitions/PageTransition";
 import { TransitionProvider, RouteGate } from "./components/transitions/RouteTransition";
-import AmbientParticles from "./components/ui/AmbientParticles";
-import DynamicLighting from "./components/ui/DynamicLighting";
+// import AmbientParticles from "./components/ui/AmbientParticles";
+// import DynamicLighting from "./components/ui/DynamicLighting";
 import InterestForm from "./components/ui/InterestForm";
 import LoaderScreen from "./components/ui/LoaderScreen";
 import LuxuryCursor from "./components/ui/LuxuryCursor";
@@ -61,8 +61,8 @@ function App() {
                     onExplore={(_country, state: IndiaState) => setExplorerState(state)}
                 />
 
-                <DynamicLighting />
-                <AmbientParticles />
+                {/*<DynamicLighting />*/}
+                {/*<AmbientParticles />*/}
                 <LuxuryCursor />
 
                 <Navbar

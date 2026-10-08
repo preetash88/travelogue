@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useEffect } from "react";
 import type { IndiaPlace, IndiaState } from "../../utils/travelData";
 
 interface Props {
@@ -7,6 +8,24 @@ interface Props {
 }
 
 const DestinationStories = ({ state, onExploreMore }: Props) => {
+    // Quietly pre-decode the card images (one at a time, when the browser is
+    // idle) so they don't hitch the scroll the moment they enter the screen.
+    useEffect(() => {
+        let cancelled = false;
+        const run = async () => {
+            for (const place of state.places) {
+                if (cancelled) return;
+                const img = new Image();
+                img.decoding = "async";
+                img.src = place.image;
+                try { await img.decode(); } catch { /* ignore */ }
+                await new Promise(resolve => setTimeout(resolve, 150));
+            }
+        };
+        const start = window.setTimeout(run, 1200);
+        return () => { cancelled = true; window.clearTimeout(start); };
+    }, [state]);
+
     return (
         <section style={{ background: "#050816", padding: "0 0 80px" }}>
 
@@ -97,10 +116,10 @@ const DestinationStories = ({ state, onExploreMore }: Props) => {
 
 // ── Single alternating row ────────────────────────────────────────────────────
 const DestinationRow = ({
-    place,
-    index,
-    imageLeft,
-}: {
+                            place,
+                            index,
+                            imageLeft,
+                        }: {
     place: IndiaPlace;
     index: number;
     imageLeft: boolean;
@@ -189,14 +208,14 @@ const DestinationRow = ({
             viewport={{ once: true, margin: "-80px" }}
             style={{ position: "relative" }}
         >
-            {/* Ambient glow */}
+            {/* Ambient glow — plain gradient (no blur filter) */}
             <div style={{
                 position: "absolute",
                 inset: "-24px",
                 borderRadius: "50%",
-                background: "rgba(34,211,238,0.06)",
-                filter: "blur(40px)",
+                background: "radial-gradient(closest-side, rgba(34,211,238,0.08), transparent)",
                 zIndex: 0,
+                pointerEvents: "none",
             }} />
 
             {/* Image */}
@@ -204,6 +223,7 @@ const DestinationRow = ({
                 src={place.image}
                 alt={place.name}
                 loading="lazy"
+                decoding="async"
                 whileHover={{ scale: 1.03 }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
                 style={{
@@ -212,7 +232,7 @@ const DestinationRow = ({
                     width: "100%",
                     height: "520px",
                     objectFit: "cover",
-                    objectPosition: "center",
+                    objectPosition: place.focus ?? "center",
                     borderRadius: "2.5rem",
                     display: "block",
                 }}

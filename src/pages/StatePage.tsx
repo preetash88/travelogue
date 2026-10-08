@@ -1,9 +1,8 @@
 import useEmblaCarousel from "embla-carousel-react";
 import { motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { uniqueIndiaStates, type IndiaPlace, type IndiaState } from "../utils/travelData";
-import useMousePosition from "../hook/useMousePosition";
 import MagneticButton from "../components/ui/MagneticButton";
 import DestinationStories from "../components/sections/DestinationStories";
 
@@ -25,6 +24,21 @@ const stateBySlug: Record<string, IndiaState> = Object.fromEntries(
     uniqueIndiaStates.map(s => [toSlug(s.state), s])
 );
 
+// ── Title sizing ──────────────────────────────────────────────────────────────
+// Inter Regular advance widths (in em) for the characters used in place names.
+// Used to size the big hero title so the longest word always fits the screen.
+const GLYPH_EM: Record<string, number> = { " ": 0.281, "&": 0.644, "'": 0.3, ",": 0.288, "A": 0.69, "B": 0.654, "C": 0.73, "D": 0.722, "E": 0.601, "F": 0.59, "G": 0.746, "H": 0.743, "I": 0.269, "J": 0.571, "K": 0.672, "L": 0.565, "M": 0.903, "N": 0.753, "O": 0.765, "P": 0.639, "Q": 0.765, "R": 0.644, "S": 0.642, "T": 0.646, "U": 0.744, "V": 0.69, "W": 0.985, "X": 0.682, "Y": 0.679, "Z": 0.629, "Ü": 0.744 };
+const TITLE_TRACKING = -0.05; // keep in sync with .hero-title letter-spacing
+
+const wordEm = (word: string): number =>
+    [...word].reduce((sum, ch) => sum + (GLYPH_EM[ch] ?? 0.7) + TITLE_TRACKING, 0);
+
+const titleVars = (title: string): CSSProperties => {
+    const words = title.split(/\s+/).filter(Boolean);
+    const longest = Math.max(...words.map(wordEm)) * 1.06; // 6% safety margin
+    return { "--wem": longest.toFixed(2), "--words": words.length } as CSSProperties;
+};
+
 // ── Adapt IndiaPlace → shape the slider expects ───────────────────────────────
 interface SliderItem {
     id: number;
@@ -32,6 +46,7 @@ interface SliderItem {
     location: string;
     image: string;
     description: string;
+    focus: string;       // CSS object-position for the hero image
     place: IndiaPlace;   // keep original for interest form
 }
 
@@ -42,6 +57,7 @@ const toSliderItems = (state: IndiaState): SliderItem[] =>
         location: `${place.type} · ${place.bestTime}`,
         image: place.image,
         description: place.description,
+        focus: place.focus ?? "center",
         place,
     }));
 
@@ -64,7 +80,7 @@ const StatePage = ({ onInterest }: Props) => {
                     Slug: <code style={{ color: "#22d3ee" }}>{stateSlug}</code>
                 </p>
                 <button onClick={() => navigate("/")}
-                    style={{ padding: "14px 36px", background: "#22d3ee", color: "#050816", borderRadius: "999px", border: "none", cursor: "pointer", fontSize: "0.8rem", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase" }}>
+                        style={{ padding: "14px 36px", background: "#22d3ee", color: "#050816", borderRadius: "999px", border: "none", cursor: "pointer", fontSize: "0.8rem", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase" }}>
                     Back to Home
                 </button>
             </div>
@@ -103,13 +119,17 @@ const StatePage = ({ onInterest }: Props) => {
 };
 
 // ── StateSlider — the HeroSlider adapted for state destinations ───────────────
+const THUMB_W = 120;
+const THUMB_H = 180;
+const THUMB_SMALL = 0.5; // scale of the non-active thumbnails
+
 const StateSlider = ({
-    items,
-    state,
-    initialIndex,
-    onInterest,
-    navigate,
-}: {
+                         items,
+                         state,
+                         initialIndex,
+                         onInterest,
+                         navigate,
+                     }: {
     items: SliderItem[];
     state: IndiaState;
     initialIndex: number;
@@ -118,9 +138,9 @@ const StateSlider = ({
 }) => {
     const [selectedIndex, setSelectedIndex] = useState(initialIndex);
     const [autoplay, setAutoplay] = useState(true);
+    const [inView, setInView] = useState(true);
     const scrolledRef = useRef(false);
-
-    const { x, y } = useMousePosition();
+    const sectionRef = useRef<HTMLElement>(null);
 
     const [emblaRef, emblaApi] = useEmblaCarousel({
         loop: true,
@@ -129,24 +149,38 @@ const StateSlider = ({
         startIndex: initialIndex,
     });
 
+    // Is the hero on screen? If not, stop autoplay + drift so they don't
+    // compete with scrolling the cards below.
+    useEffect(() => {
+        const el = sectionRef.current;
+        if (!el) return;
+        const io = new IntersectionObserver(
+            ([entry]) => setInView(entry.isIntersecting),
+            { threshold: 0.25 }
+        );
+        io.observe(el);
+        return () => io.disconnect();
+    }, []);
+
     useEffect(() => {
         if (!emblaApi) return;
         const onSelect = () => setSelectedIndex(emblaApi.selectedScrollSnap());
         emblaApi.on("select", onSelect);
         onSelect();
+        return () => { emblaApi.off("select", onSelect); };
     }, [emblaApi]);
 
     useEffect(() => {
-        if (!emblaApi || !autoplay) return;
+        if (!emblaApi || !autoplay || !inView) return;
         const t = setInterval(() => emblaApi.scrollNext(), AUTOPLAY_DELAY);
         return () => clearInterval(t);
-    }, [emblaApi, autoplay]);
+    }, [emblaApi, autoplay, inView]);
 
     useEffect(() => {
         if (!emblaApi) return;
         const stop = () => setAutoplay(false);
         emblaApi.on("pointerDown", stop);
-        return () => emblaApi.off("pointerDown", stop);
+        return () => { emblaApi.off("pointerDown", stop); };
     }, [emblaApi]);
 
     // Jump to correct slide on mount (destSlug deep link)
@@ -158,8 +192,29 @@ const StateSlider = ({
         }
     }, [emblaApi, initialIndex]);
 
+    // Pre-decode every hero image once, one at a time, so sliding to a new
+    // slide never has to decode a big image mid-animation.
+    useEffect(() => {
+        if (!emblaApi) return;
+        let cancelled = false;
+        const imgs = emblaApi
+            .slideNodes()
+            .map(node => node.querySelector("img"))
+            .filter((img): img is HTMLImageElement => img !== null);
+
+        (async () => {
+            for (const img of imgs) {
+                if (cancelled) return;
+                try { await img.decode(); } catch { /* ignore */ }
+                await new Promise(resolve => setTimeout(resolve, 60));
+            }
+        })();
+
+        return () => { cancelled = true; };
+    }, [emblaApi]);
+
     return (
-        <section className="relative h-screen w-full overflow-hidden">
+        <section ref={sectionRef} className="relative h-screen w-full overflow-hidden">
 
             {/* ── Breadcrumb ──────────────────────────────────────────────── */}
             <div style={{
@@ -168,16 +223,16 @@ const StateSlider = ({
                 pointerEvents: "all",
             }}>
                 <button onClick={() => navigate("/")}
-                    style={{ background: "none", border: "none", cursor: "pointer", fontSize: "0.55rem", letterSpacing: "0.4em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", padding: 0, transition: "color 0.2s", textShadow: "0 1px 6px rgba(0,0,0,0.9)" }}
-                    onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,0.8)"}
-                    onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.35)"}>
+                        style={{ background: "none", border: "none", cursor: "pointer", fontSize: "0.55rem", letterSpacing: "0.4em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", padding: 0, transition: "color 0.2s", textShadow: "0 1px 6px rgba(0,0,0,0.9)" }}
+                        onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,0.8)"}
+                        onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.35)"}>
                     Lamhe
                 </button>
                 <span style={{ color: "rgba(255,255,255,0.25)", fontSize: "0.55rem", textShadow: "0 1px 4px rgba(0,0,0,0.9)" }}>→</span>
                 <button onClick={() => navigate("/")}
-                    style={{ background: "none", border: "none", cursor: "pointer", fontSize: "0.55rem", letterSpacing: "0.4em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", padding: 0, transition: "color 0.2s", textShadow: "0 1px 6px rgba(0,0,0,0.9)" }}
-                    onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,0.8)"}
-                    onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.35)"}>
+                        style={{ background: "none", border: "none", cursor: "pointer", fontSize: "0.55rem", letterSpacing: "0.4em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", padding: 0, transition: "color 0.2s", textShadow: "0 1px 6px rgba(0,0,0,0.9)" }}
+                        onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,0.8)"}
+                        onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.35)"}>
                     India
                 </button>
                 <span style={{ color: "rgba(255,255,255,0.25)", fontSize: "0.55rem", textShadow: "0 1px 4px rgba(0,0,0,0.9)" }}>→</span>
@@ -189,73 +244,62 @@ const StateSlider = ({
             {/* ── Embla slides ────────────────────────────────────────────── */}
             <div className="embla h-full" ref={emblaRef}>
                 <div className="embla__container h-full">
-                    {items.map((item, index) => (
-                        <div key={item.id} className="embla__slide relative h-full min-w-full overflow-hidden">
+                    {items.map((item, index) => {
+                        const isActive = selectedIndex === index;
+                        return (
+                            <div key={item.id} className="embla__slide relative h-full min-w-full overflow-hidden">
 
-                            <motion.div
-                                className="absolute inset-0"
-                                animate={{
-                                    scale: selectedIndex === index ? [1, 1.008, 1] : 1.015,
-                                    x: selectedIndex === index ? [0, -12, 0] : x * 0.01,
-                                    y: selectedIndex === index ? [-50, -100, -50] : y * 0.01,
-                                }}
-                                transition={{ duration: 18, repeat: selectedIndex === index ? Infinity : 0, ease: "easeInOut" }}
-                            >
-                                <img src={item.image} alt={item.title}
-                                    loading={index === 0 ? "eager" : "lazy"}
-                                    className="h-full w-full object-cover object-center gpu" />
+                                <div className={`kenburns absolute inset-0 ${isActive && inView ? "" : "kenburns--paused"}`}>
+                                    <img src={item.image} alt={item.title}
+                                         loading="eager"
+                                         decoding="async"
+                                         fetchPriority={index === initialIndex ? "high" : "auto"}
+                                         className="h-full w-full object-cover"
+                                         style={{ objectPosition: item.focus }} />
+                                </div>
 
-                                <div className="absolute inset-x-0 bottom-0 z-20 h-[38%] bg-gradient-to-t from-[#050816] via-[#050816]/40 to-transparent" />
-
+                                {/* Dark wash — fades slightly on inactive slides */}
                                 <motion.div
-                                    animate={{ y: [-4, 4, -4], opacity: [0.65, 0.8, 0.65] }}
-                                    transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-                                    className="absolute inset-x-0 bottom-0 z-30 h-[42%] bg-gradient-to-t from-[#050816]/45 via-[#050816]/10 to-transparent pointer-events-none"
+                                    animate={{ opacity: isActive ? 1 : 0.6 }}
+                                    transition={{ duration: 1.2 }}
+                                    className="absolute inset-0 bg-black/20"
                                 />
 
+                                {/* Bottom fade into the page background */}
+                                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[45%] bg-gradient-to-t from-[#050816] via-[#050816]/35 to-transparent" />
+                                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#050816]/70 via-transparent to-black/20" />
+
+                                {/* ── Slide copy — bottom left ─────────────────── */}
                                 <motion.div
-                                    animate={{ opacity: [0.08, 0.16, 0.08], x: [-30, 30, -30] }}
-                                    transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-                                    className="absolute inset-0 z-10 bg-gradient-to-r from-white/10 via-transparent to-white/5 blur-3xl pointer-events-none"
-                                />
-                            </motion.div>
+                                    animate={{
+                                        y: isActive ? 0 : 60,
+                                        opacity: isActive ? 1 : 0,
+                                    }}
+                                    transition={{ duration: 1.1, ease: "easeOut" }}
+                                    className="absolute bottom-14 left-6 right-6 z-20 md:left-12 md:right-12 lg:bottom-8 lg:left-52 lg:right-28"
+                                >
+                                    <p className="mb-4 text-xs uppercase tracking-[0.5em] text-white/70 md:text-sm">
+                                        {item.location}
+                                    </p>
 
-                            <motion.div
-                                animate={{ opacity: selectedIndex === index ? 1 : 0.6 }}
-                                transition={{ duration: 1.2 }}
-                                className="absolute inset-0 bg-black/20"
-                            />
+                                    <h1
+                                        className="hero-title relative z-10 font-semibold leading-none text-[#f8f8f8]/85"
+                                        style={titleVars(item.title)}
+                                    >
+                                        {item.title}
+                                    </h1>
 
-                            <div className="absolute inset-0 bg-gradient-to-t from-[#050816]/70 via-transparent to-black/20" />
+                                    <p className="mt-6 max-w-xl text-sm leading-relaxed text-white/55 md:text-base">
+                                        {item.description}
+                                    </p>
 
-                            {/* ── Slide copy — bottom left ─────────────────── */}
-                            <motion.div
-                                animate={{
-                                    y: selectedIndex === index ? 0 : 80,
-                                    opacity: selectedIndex === index ? 1 : 0,
-                                    scale: selectedIndex === index ? 1 : 0.96,
-                                }}
-                                transition={{ duration: 1.2, ease: "easeOut" }}
-                                className="absolute bottom-8 left-32 z-20 max-w-4xl md:left-44 lg:left-52"
-                            >
-                                <p className="mb-4 text-xs uppercase tracking-[0.5em] text-white/70 md:text-sm">
-                                    {item.location}
-                                </p>
-
-                                <h1 className="relative z-10 text-6xl font-semibold leading-none tracking-[-0.04em] text-[#f8f8f8]/85 md:text-[9rem] lg:text-[13rem] tracking-[-0.06em]">
-                                    {item.title}
-                                </h1>
-
-                                <p className="mt-6 max-w-xl text-sm leading-relaxed text-white/55 md:text-base">
-                                    {item.description}
-                                </p>
-
-                                <MagneticButton onClick={() => onInterest(item.place.name, state.state)}>
-                                    Show Interest
-                                </MagneticButton>
-                            </motion.div>
-                        </div>
-                    ))}
+                                    <MagneticButton onClick={() => onInterest(item.place.name, state.state)}>
+                                        Show Interest
+                                    </MagneticButton>
+                                </motion.div>
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
 
@@ -278,31 +322,49 @@ const StateSlider = ({
                                 onClick={() => { emblaApi?.scrollTo(index); setAutoplay(false); }}
                                 animate={{
                                     y: offset * 155,
-                                    scale: isActive ? 1 : 0.72,
                                     rotateZ: isActive ? 0 : offset * 1.5,
                                     opacity: Math.abs(offset) > 1 ? 0 : isActive ? 1 : 0.32,
                                 }}
                                 transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                                whileHover={{ scale: isActive ? 1 : 0.8 }}
                                 className="absolute left-0 top-1/2 origin-center -translate-y-1/2"
+                                style={{ width: THUMB_W }}
                             >
-                                {isActive && (
-                                    <div className="absolute inset-0 rounded-[2rem] bg-cyan-300/10 blur-2xl" />
-                                )}
+                                {/* Fixed-size card — only its scale animates (no layout work) */}
+                                <motion.div
+                                    animate={{ scale: isActive ? 1 : THUMB_SMALL }}
+                                    whileHover={{ scale: isActive ? 1 : THUMB_SMALL + 0.1 }}
+                                    transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                                    className="relative origin-center"
+                                    style={{ width: THUMB_W, height: THUMB_H }}
+                                >
+                                    {/* soft glow behind the active card (opacity only) */}
+                                    <motion.div
+                                        animate={{ opacity: isActive ? 1 : 0 }}
+                                        transition={{ duration: 0.6 }}
+                                        className="pointer-events-none absolute -inset-5 rounded-[3rem] bg-[radial-gradient(closest-side,rgba(103,232,249,0.14),transparent)]"
+                                    />
 
-                                <div className={`relative overflow-hidden rounded-[2rem] transition-all duration-700 ${
-                                    isActive
-                                        ? "h-[180px] w-[120px] border border-white/30 shadow-[0_0_50px_rgba(255,255,255,0.15)]"
-                                        : "h-[110px] w-[82px] border border-white/8"
-                                }`}>
-                                    <img src={item.image} alt={item.title}
-                                        loading="lazy"
-                                        className="relative z-10 h-full w-full object-cover object-[center_30%] gpu" />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
-                                </div>
+                                    <div className="relative h-full w-full overflow-hidden rounded-[2rem] border border-white/15">
+                                        <img src={item.image} alt={item.title}
+                                             decoding="async"
+                                             className="relative z-10 h-full w-full object-cover object-[center_30%]" />
+                                        <div className="absolute inset-0 z-20 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+                                    </div>
+
+                                    {/* bright ring for the active card (opacity only) */}
+                                    <motion.div
+                                        animate={{ opacity: isActive ? 1 : 0 }}
+                                        transition={{ duration: 0.6 }}
+                                        className="pointer-events-none absolute inset-0 rounded-[2rem] border border-white/30 shadow-[0_0_40px_rgba(255,255,255,0.15)]"
+                                    />
+                                </motion.div>
 
                                 <motion.p
-                                    animate={{ opacity: isActive ? 1 : 0.4 }}
+                                    animate={{
+                                        opacity: isActive ? 1 : 0.4,
+                                        y: isActive ? 0 : -(THUMB_H * (1 - THUMB_SMALL)) / 2,
+                                    }}
+                                    transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
                                     className="mt-4 text-center text-[10px] uppercase tracking-[0.4em] text-white"
                                 >
                                     {item.title.split(" ")[0]}
@@ -343,7 +405,7 @@ const StateSlider = ({
                     ))}
 
                     <motion.div
-                        animate={{ top: `${selectedIndex * (100 / (items.length - 1))}%` }}
+                        animate={{ top: `${selectedIndex * (100 / Math.max(items.length - 1, 1))}%` }}
                         transition={{ duration: 0.6, ease: "easeOut" }}
                         className="absolute left-1/2 h-16 w-[2px] -translate-x-1/2 rounded-full bg-gradient-to-b from-white via-cyan-200 to-transparent"
                     />
@@ -372,10 +434,10 @@ const StateSlider = ({
             <div className="absolute bottom-6 left-1/2 z-30 -translate-x-1/2 flex gap-2 lg:hidden">
                 {items.map((_, index) => (
                     <button key={index}
-                        onClick={() => { emblaApi?.scrollTo(index); setAutoplay(false); }}
-                        className={`h-1.5 rounded-full transition-all duration-300 ${
-                            selectedIndex === index ? "w-8 bg-white" : "w-1.5 bg-white/30"
-                        }`}
+                            onClick={() => { emblaApi?.scrollTo(index); setAutoplay(false); }}
+                            className={`h-1.5 rounded-full transition-all duration-300 ${
+                                selectedIndex === index ? "w-8 bg-white" : "w-1.5 bg-white/30"
+                            }`}
                     />
                 ))}
             </div>
