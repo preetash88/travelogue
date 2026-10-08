@@ -7,7 +7,7 @@ interface Props {
 
 const BookingSection = ({ onInterest }: Props) => {
     return (
-        <section style={{ position: "relative", padding: "96px 48px", maxWidth: "100%" }}>
+        <section id="plan-your-lamhe" style={{ position: "relative", padding: "96px 48px", maxWidth: "100%" }}>
             <motion.div
                 initial={{ opacity: 0, y: 60 }}
                 whileInView={{ opacity: 1, y: 0 }}

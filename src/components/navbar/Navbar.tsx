@@ -73,6 +73,7 @@ const Navbar = ({onContactClick, onDestinationsClick}: Props) => {
                 </div>
 
                 {/* "You are here" chip — only on state pages, centred in the bar */}
+                {/* "You are here" chip — only on state pages, centred in the bar */}
                 {currentState && (
                     <div
                         className="pointer-events-none absolute inset-x-0 bottom-0 top-[10px] hidden items-center justify-center md:flex">
@@ -83,12 +84,12 @@ const Navbar = ({onContactClick, onDestinationsClick}: Props) => {
                             transition={{duration: 0.6, delay: 0.4}}
                             onClick={() => (window as any).__lenis?.scrollTo(0, {duration: 1.2})}
                             aria-label={`You are exploring ${currentState.state}. Back to top`}
-                            className="pointer-events-auto flex items-center gap-2.5 rounded-full border border-white/15 bg-black/25 px-4 py-1.5"
+                            className="pointer-events-auto flex items-center gap-2.5 rounded-full border border-white/20 bg-black/35 px-5 py-2"
                         >
+            <span
+                className="h-2 w-2 rounded-full bg-cyan-300 shadow-[0_0_10px_rgba(103,232,249,0.9)]"/>
                             <span
-                                className="h-1.5 w-1.5 rounded-full bg-cyan-300 shadow-[0_0_10px_rgba(103,232,249,0.9)]"/>
-                            <span
-                                className="text-[11px] font-medium uppercase tracking-[0.35em] text-white/90"
+                                className="text-xs font-medium uppercase tracking-[0.35em] text-white/90"
                                 style={{textShadow: "0 1px 6px rgba(0,0,0,0.6)"}}
                             >
                 {currentState.state}

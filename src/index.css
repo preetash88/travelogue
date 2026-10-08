@@ -238,21 +238,22 @@ section {
 .kenburns--paused { animation-play-state: paused; }
 
 /* ── Hero title: shrinks so the longest word always fits the screen ── */
+/* The number right after min( is the biggest size allowed — change it to taste. */
 .hero-title {
     letter-spacing: -0.05em;
     --avail: calc(100vw - 3rem);
-    font-size: max(2.25rem, min(4.5rem, calc(var(--avail) / var(--wem)), calc(42vh / var(--words))));
+    font-size: max(2rem, min(3.5rem, calc(var(--avail) / var(--wem)), calc(42vh / var(--words))));
 }
 @media (min-width: 768px) {
     .hero-title {
         --avail: calc(100vw - 6rem);
-        font-size: max(3rem, min(6.5rem, calc(var(--avail) / var(--wem)), calc(42vh / var(--words))));
+        font-size: max(2.5rem, min(5rem, calc(var(--avail) / var(--wem)), calc(42vh / var(--words))));
     }
 }
 @media (min-width: 1024px) {
     .hero-title {
         --avail: calc(100vw - 20rem);
-        font-size: max(3.5rem, min(9rem, calc(var(--avail) / var(--wem)), calc(42vh / var(--words))));
+        font-size: max(3rem, min(7.5rem, calc(var(--avail) / var(--wem)), calc(42vh / var(--words))));
     }
 }
 
@@ -347,4 +348,22 @@ html.lenis { scroll-behavior: auto; }
 @media (prefers-reduced-motion: reduce) {
     .reveal { opacity: 1; transform: none; transition: none; }
     .kenburns { animation: none; }
+}
+
+/* ── Floating ↑ / ↓ page pointers ── */
+.scroll-pointer {
+    opacity: var(--op, 0);
+    cursor: pointer;
+    transition:
+            opacity 0.45s ease,
+            transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+            border-color 0.25s,
+            color 0.25s,
+            background-color 0.25s;
+}
+.scroll-pointer[data-show="true"]:hover {
+    opacity: 1;
+    border-color: rgba(103, 232, 249, 0.7);
+    color: #a5f3fc;
+    background-color: rgba(8, 145, 178, 0.2);
 }

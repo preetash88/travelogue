@@ -3,13 +3,15 @@ import { motion } from "framer-motion";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { uniqueIndiaStates, type IndiaPlace, type IndiaState } from "../utils/travelData";
+import { BOOKING_ID, HERO_ID, scrollToId, storyId } from "../utils/pageAnchor.ts";
 import MagneticButton from "../components/ui/MagneticButton";
+import ScrollPointers from "../components/ui/ScrollPointers";
 import DestinationStories from "../components/sections/DestinationStories";
 
 const AUTOPLAY_DELAY = 5000;
 
 interface Props {
-    onInterest: (place?: string, state?: string) => void;
+    onInterest: (place?: string, state?: string) => void; // still passed by App; the hero now scrolls instead
 }
 
 // ── Slug helpers ──────────────────────────────────────────────────────────────
@@ -47,7 +49,7 @@ interface SliderItem {
     image: string;
     description: string;
     focus: string;       // CSS object-position for the hero image
-    place: IndiaPlace;   // keep original for interest form
+    place: IndiaPlace;
 }
 
 const toSliderItems = (state: IndiaState): SliderItem[] =>
@@ -62,7 +64,7 @@ const toSliderItems = (state: IndiaState): SliderItem[] =>
     }));
 
 // ── StatePage ─────────────────────────────────────────────────────────────────
-const StatePage = ({ onInterest }: Props) => {
+const StatePage = (_props: Props) => {
     const { stateSlug, destSlug } = useParams<{ stateSlug: string; destSlug?: string }>();
     const navigate = useNavigate();
 
@@ -94,26 +96,13 @@ const StatePage = ({ onInterest }: Props) => {
         ? Math.max(0, items.findIndex(item => toSlug(item.place.name) === destSlug))
         : 0;
 
-    const scrollToBooking = () => {
-        // BookingSection has no id yet — scroll to it by finding the last <section>
-        // inside <main> that contains "Curated" text (its heading), or fall back
-        // to near-bottom of page
-        const allSections = Array.from(document.querySelectorAll("main section"));
-        const booking = allSections.find(s => s.textContent?.includes("Plan Your")) as HTMLElement
-            ?? allSections[allSections.length - 1] as HTMLElement;
-        if (booking) {
-            if (window.__lenis) {
-                (window.__lenis as any).scrollTo(booking, { offset: -60, duration: 1.4 });
-            } else {
-                booking.scrollIntoView({ behavior: "smooth" });
-            }
-        }
-    };
+    const scrollToBooking = () => scrollToId(BOOKING_ID, -60);
 
     return (
         <>
-            <StateSlider items={items} state={stateData} initialIndex={initialIndex} onInterest={onInterest} navigate={navigate} />
+            <StateSlider items={items} initialIndex={initialIndex} />
             <DestinationStories state={stateData} onExploreMore={scrollToBooking} />
+            <ScrollPointers count={stateData.places.length} resetKey={stateData.state} />
         </>
     );
 };
@@ -125,16 +114,10 @@ const THUMB_SMALL = 0.5; // scale of the non-active thumbnails
 
 const StateSlider = ({
                          items,
-                         state,
                          initialIndex,
-                         onInterest,
-                         navigate,
                      }: {
     items: SliderItem[];
-    state: IndiaState;
     initialIndex: number;
-    onInterest: (place?: string, state?: string) => void;
-    navigate: ReturnType<typeof useNavigate>;
 }) => {
     const [selectedIndex, setSelectedIndex] = useState(initialIndex);
     const [autoplay, setAutoplay] = useState(true);
@@ -214,32 +197,7 @@ const StateSlider = ({
     }, [emblaApi]);
 
     return (
-        <section ref={sectionRef} className="relative h-screen w-full overflow-hidden">
-
-            {/* ── Breadcrumb ──────────────────────────────────────────────── */}
-            {/*<div style={{*/}
-            {/*    position: "absolute", top: "88px", left: "48px", zIndex: 40,*/}
-            {/*    display: "flex", alignItems: "center", gap: "10px",*/}
-            {/*    pointerEvents: "all",*/}
-            {/*}}>*/}
-            {/*    <button onClick={() => navigate("/")}*/}
-            {/*            style={{ background: "none", border: "none", cursor: "pointer", fontSize: "0.55rem", letterSpacing: "0.4em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", padding: 0, transition: "color 0.2s", textShadow: "0 1px 6px rgba(0,0,0,0.9)" }}*/}
-            {/*            onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,0.8)"}*/}
-            {/*            onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.35)"}>*/}
-            {/*        Lamhe*/}
-            {/*    </button>*/}
-            {/*    <span style={{ color: "rgba(255,255,255,0.25)", fontSize: "0.55rem", textShadow: "0 1px 4px rgba(0,0,0,0.9)" }}>→</span>*/}
-            {/*    <button onClick={() => navigate("/")}*/}
-            {/*            style={{ background: "none", border: "none", cursor: "pointer", fontSize: "0.55rem", letterSpacing: "0.4em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", padding: 0, transition: "color 0.2s", textShadow: "0 1px 6px rgba(0,0,0,0.9)" }}*/}
-            {/*            onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,0.8)"}*/}
-            {/*            onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.35)"}>*/}
-            {/*        India*/}
-            {/*    </button>*/}
-            {/*    <span style={{ color: "rgba(255,255,255,0.25)", fontSize: "0.55rem", textShadow: "0 1px 4px rgba(0,0,0,0.9)" }}>→</span>*/}
-            {/*    <span style={{ fontSize: "0.55rem", letterSpacing: "0.4em", textTransform: "uppercase", color: "#22d3ee", textShadow: "0 1px 6px rgba(0,0,0,0.9)" }}>*/}
-            {/*        {state.state}*/}
-            {/*    </span>*/}
-            {/*</div>*/}
+        <section id={HERO_ID} ref={sectionRef} className="relative h-screen w-full overflow-hidden">
 
             {/* ── Embla slides ────────────────────────────────────────────── */}
             <div className="embla h-full" ref={emblaRef}>
@@ -278,24 +236,26 @@ const StateSlider = ({
                                     transition={{ duration: 1.1, ease: "easeOut" }}
                                     className="absolute bottom-14 left-6 right-6 z-20 md:left-12 md:right-12 lg:bottom-8 lg:left-52 lg:right-28"
                                 >
-                                    <p className="mb-4 text-xs uppercase tracking-[0.5em] text-white/70 md:text-sm">
+                                    <p className="mb-3 text-[10px] uppercase tracking-[0.45em] text-white/55 md:text-xs">
                                         {item.location}
                                     </p>
 
                                     <h1
-                                        className="hero-title relative z-10 font-semibold leading-none text-[#f8f8f8]/85"
+                                        className="hero-title relative z-10 font-semibold leading-none text-white/70"
                                         style={titleVars(item.title)}
                                     >
                                         {item.title}
                                     </h1>
 
-                                    <p className="mt-6 max-w-xl text-sm leading-relaxed text-white/55 md:text-base">
+                                    <p className="mt-4 max-w-md text-xs leading-relaxed text-white/50 md:text-sm">
                                         {item.description}
                                     </p>
 
-                                    <MagneticButton onClick={() => onInterest(item.place.name, state.state)}>
-                                        Show Interest
-                                    </MagneticButton>
+                                    <div className="mt-5">
+                                        <MagneticButton onClick={() => scrollToId(BOOKING_ID, -60)}>
+                                            Show Interest
+                                        </MagneticButton>
+                                    </div>
                                 </motion.div>
                             </div>
                         );
@@ -385,20 +345,21 @@ const StateSlider = ({
             {/* ── Right dot navigator ─────────────────────────────────────── */}
             <div className="absolute right-8 top-1/2 z-30 hidden -translate-y-1/2 items-center gap-6 lg:flex">
                 <div className="relative flex h-[320px] w-[2px] flex-col items-center justify-between rounded-full bg-white/15">
-                    {items.map((_, index) => (
+                    {items.map((item, index) => (
                         <motion.button
                             key={index}
+                            aria-label={`Go to ${item.title}`}
                             onClick={() => { emblaApi?.scrollTo(index); setAutoplay(false); }}
                             whileHover={{ scale: 1.2 }}
-                            className="relative z-10 flex h-4 w-4 items-center justify-center rounded-full"
+                            className="group relative z-10 flex h-4 w-4 cursor-pointer items-center justify-center rounded-full"
                         >
                             <motion.div
-                                animate={{ scale: selectedIndex === index ? 1.8 : 1, opacity: selectedIndex === index ? 1 : 0.5 }}
+                                animate={{ scale: selectedIndex === index ? 1.8 : 1 }}
                                 transition={{ duration: 0.4 }}
-                                className={`h-2 w-2 rounded-full ${
+                                className={`h-2 w-2 rounded-full transition-[background-color,box-shadow] duration-300 ${
                                     selectedIndex === index
                                         ? "bg-white shadow-[0_0_20px_rgba(255,255,255,0.9)]"
-                                        : "bg-white/50"
+                                        : "bg-white/25 group-hover:bg-cyan-300 group-hover:shadow-[0_0_12px_rgba(103,232,249,0.9)]"
                                 }`}
                             />
                         </motion.button>
@@ -424,9 +385,14 @@ const StateSlider = ({
 
                     <div className="h-20 w-px bg-white/20" />
 
-                    <span className="text-xs uppercase tracking-[0.3em] text-white/30 [writing-mode:vertical-rl]">
+                    {/* Click → scroll to this destination's card below */}
+                    <button
+                        onClick={() => scrollToId(storyId(selectedIndex), -90)}
+                        aria-label={`Explore ${items[selectedIndex]?.title ?? "destination"} below`}
+                        className="cursor-pointer text-xs uppercase tracking-[0.3em] text-white/40 transition-colors duration-300 [writing-mode:vertical-rl] hover:text-cyan-300"
+                    >
                         Explore
-                    </span>
+                    </button>
                 </div>
             </div>
 
@@ -441,28 +407,6 @@ const StateSlider = ({
                     />
                 ))}
             </div>
-
-            {/* ── State label (top centre) ─────────────────────────────────── */}
-            {/*<motion.div*/}
-            {/*    key={state.state}*/}
-            {/*    initial={{ opacity: 0, y: -10 }}*/}
-            {/*    animate={{ opacity: 1, y: 0 }}*/}
-            {/*    transition={{ duration: 0.6 }}*/}
-            {/*    className="absolute top-24 left-1/2 z-30 -translate-x-1/2 text-center pointer-events-none"*/}
-            {/*>*/}
-            {/*    <p*/}
-            {/*        className="text-lg font-semibold uppercase tracking-[0.5em] text-white/80 md:text-2xl"*/}
-            {/*        style={{ textShadow: "0 2px 16px rgba(0,0,0,0.55)" }}*/}
-            {/*    >*/}
-            {/*        {state.state}*/}
-            {/*    </p>*/}
-            {/*    <p*/}
-            {/*        className="mt-2 text-xs italic tracking-[0.25em] text-white/85 md:text-sm"*/}
-            {/*        style={{ textShadow: "0 1px 10px rgba(0,0,0,0.6)" }}*/}
-            {/*    >*/}
-            {/*        {state.tagline}*/}
-            {/*    </p>*/}
-            {/*</motion.div>*/}
 
         </section>
     );

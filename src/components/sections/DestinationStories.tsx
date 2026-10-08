@@ -1,5 +1,6 @@
 import {useEffect, useRef, useState, type CSSProperties, type ReactNode} from "react";
 import type {IndiaPlace, IndiaState} from "../../utils/travelData";
+import { storyId } from "../../utils/pageAnchor.ts";
 
 interface Props {
     state: IndiaState;
@@ -294,7 +295,7 @@ const DestinationRow = ({
     );
 
     return (
-        <div ref={rowRef} style={{
+        <div id={storyId(index)} ref={rowRef} style={{
             display: "grid",
             gridTemplateColumns: "1fr 1fr",
             gap: "0",
