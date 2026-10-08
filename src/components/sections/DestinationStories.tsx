@@ -1,42 +1,79 @@
-import { motion } from "framer-motion";
-import { useEffect } from "react";
-import type { IndiaPlace, IndiaState } from "../../utils/travelData";
+import {useEffect, useRef, useState, type CSSProperties, type ReactNode} from "react";
+import type {IndiaPlace, IndiaState} from "../../utils/travelData";
 
 interface Props {
     state: IndiaState;
     onExploreMore: () => void;
 }
 
-const DestinationStories = ({ state, onExploreMore }: Props) => {
-    // Quietly pre-decode the card images (one at a time, when the browser is
-    // idle) so they don't hitch the scroll the moment they enter the screen.
+// ── useInView — flips to true (once) the first time the element is on screen ──
+const useInView = <T extends HTMLElement>(rootMargin: string) => {
+    const ref = useRef<T>(null);
+    const [seen, setSeen] = useState(false);
+
     useEffect(() => {
-        let cancelled = false;
-        const run = async () => {
-            for (const place of state.places) {
-                if (cancelled) return;
-                const img = new Image();
-                img.decoding = "async";
-                img.src = place.image;
-                try { await img.decode(); } catch { /* ignore */ }
-                await new Promise(resolve => setTimeout(resolve, 150));
-            }
-        };
-        const start = window.setTimeout(run, 1200);
-        return () => { cancelled = true; window.clearTimeout(start); };
-    }, [state]);
+        const el = ref.current;
+        if (!el || seen) return;
+        const io = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setSeen(true);
+                    io.disconnect();
+                }
+            },
+            {rootMargin}
+        );
+        io.observe(el);
+        return () => io.disconnect();
+    }, [seen, rootMargin]);
+
+    return [ref, seen] as const;
+};
+
+// ── Reveal — fade/slide in using CSS transitions (runs on the GPU compositor,
+//    not on the main thread, so it never fights with scrolling) ───────────────
+const Reveal = ({
+                    x = 0,
+                    y = 0,
+                    delay = 0,
+                    hold = false,
+                    style,
+                    children,
+                }: {
+    x?: number;
+    y?: number;
+    delay?: number;
+    hold?: boolean; // keep hidden until this is false (e.g. waiting for an image)
+    style?: CSSProperties;
+    children: ReactNode;
+}) => {
+    const [ref, seen] = useInView<HTMLDivElement>("0px 0px -80px 0px");
+    return (
+        <div
+            ref={ref}
+            className={`reveal ${seen && !hold ? "is-in" : ""}`}
+            style={{"--rx": `${x}px`, "--ry": `${y}px`, "--rd": `${delay}s`, ...style} as CSSProperties}
+        >
+            {children}
+        </div>
+    );
+};
+
+// ── DestinationStories ────────────────────────────────────────────────────────
+const DestinationStories = ({state, onExploreMore}: Props) => {
+    // Give the hero images a head start before the card images begin loading.
+    const [armed, setArmed] = useState(false);
+    useEffect(() => {
+        const t = window.setTimeout(() => setArmed(true), 600);
+        return () => window.clearTimeout(t);
+    }, []);
 
     return (
-        <section style={{ background: "#050816", padding: "0 0 80px" }}>
+        <section style={{background: "#050816", padding: "0 0 80px"}}>
 
             {/* Section label */}
-            <div style={{ padding: "72px 48px 0" }}>
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7 }}
-                    viewport={{ once: true }}
-                >
+            <div style={{padding: "72px 48px 0"}}>
+                <Reveal y={20}>
                     <p style={{
                         fontSize: "0.58rem",
                         letterSpacing: "0.55em",
@@ -47,69 +84,38 @@ const DestinationStories = ({ state, onExploreMore }: Props) => {
                     }}>
                         {state.state} · All Destinations
                     </p>
-                    <div style={{ width: "40px", height: "1px", background: "rgba(34,211,238,0.3)" }} />
-                </motion.div>
+                    <div style={{width: "40px", height: "1px", background: "rgba(34,211,238,0.3)"}}/>
+                    <p style={{
+                        marginTop: "16px",
+                        fontSize: "1rem",
+                        fontStyle: "italic",
+                        color: "rgba(255,255,255,0.45)"
+                    }}>
+                        {state.tagline}
+                    </p>
+                </Reveal>
             </div>
 
             {/* One row per destination */}
-            {state.places.map((place, i) => {
-                const imageLeft = i % 2 !== 0; // text-left/image-right first, then flips
-                return (
-                    <DestinationRow
-                        key={place.name}
-                        place={place}
-                        index={i}
-                        imageLeft={imageLeft}
-                    />
-                );
-            })}
+            {state.places.map((place, i) => (
+                <DestinationRow
+                    key={place.name}
+                    place={place}
+                    index={i}
+                    imageLeft={i % 2 !== 0}
+                    armed={armed}
+                />
+            ))}
 
             {/* Explore More — scrolls to BookingSection */}
-            <motion.div
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.1 }}
-                viewport={{ once: true }}
-                style={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    padding: "24px 48px 0",
-                }}
-            >
-                <motion.button
-                    onClick={onExploreMore}
-                    whileHover={{ x: 6 }}
-                    whileTap={{ scale: 0.97 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "12px",
-                        background: "none",
-                        border: "1px solid rgba(34,211,238,0.3)",
-                        borderRadius: "999px",
-                        padding: "14px 28px",
-                        cursor: "pointer",
-                        color: "#22d3ee",
-                        fontSize: "0.7rem",
-                        fontWeight: 700,
-                        letterSpacing: "0.3em",
-                        textTransform: "uppercase",
-                        transition: "border-color 0.25s, background 0.25s",
-                    }}
-                    onMouseEnter={e => {
-                        e.currentTarget.style.background = "rgba(34,211,238,0.08)";
-                        e.currentTarget.style.borderColor = "rgba(34,211,238,0.6)";
-                    }}
-                    onMouseLeave={e => {
-                        e.currentTarget.style.background = "none";
-                        e.currentTarget.style.borderColor = "rgba(34,211,238,0.3)";
-                    }}
-                >
-                    Plan Your Trip
-                    <span style={{ fontSize: "1rem", lineHeight: 1 }}>→</span>
-                </motion.button>
-            </motion.div>
+            <div style={{display: "flex", justifyContent: "flex-end", padding: "24px 48px 0"}}>
+                <Reveal y={24} delay={0.1}>
+                    <button onClick={onExploreMore} className="story-cta">
+                        Plan Your Trip
+                        <span style={{fontSize: "1rem", lineHeight: 1}}>→</span>
+                    </button>
+                </Reveal>
+            </div>
         </section>
     );
 };
@@ -119,17 +125,52 @@ const DestinationRow = ({
                             place,
                             index,
                             imageLeft,
+                            armed,
                         }: {
     place: IndiaPlace;
     index: number;
     imageLeft: boolean;
+    armed: boolean;
 }) => {
+    const rowRef = useRef<HTMLDivElement>(null);
+    const imgRef = useRef<HTMLImageElement>(null);
+    const [load, setLoad] = useState(false);       // start fetching the image
+    const [imgReady, setImgReady] = useState(false); // image fetched AND decoded
+
+    // 1) Start fetching when the row is within ~2 screens of the viewport.
+    useEffect(() => {
+        const el = rowRef.current;
+        if (!armed || !el) return;
+        const io = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setLoad(true);
+                    io.disconnect();
+                }
+            },
+            {rootMargin: "2000px 0px"}
+        );
+        io.observe(el);
+        return () => io.disconnect();
+    }, [armed]);
+
+    // 2) Decode it off-screen, so the reveal animation starts on a ready image.
+    useEffect(() => {
+        const img = imgRef.current;
+        if (!load || !img) return;
+        let cancelled = false;
+        const ready = () => {
+            if (!cancelled) setImgReady(true);
+        };
+        img.decode().then(ready, ready); // on error, still reveal (shows alt text)
+        return () => {
+            cancelled = true;
+        };
+    }, [load]);
+
     const textContent = (
-        <motion.div
-            initial={{ opacity: 0, x: imageLeft ? 40 : -40 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-            viewport={{ once: true, margin: "-80px" }}
+        <Reveal
+            x={imageLeft ? 40 : -40}
             style={{
                 display: "flex",
                 flexDirection: "column",
@@ -173,7 +214,7 @@ const DestinationRow = ({
                 {place.tagline}
             </p>
 
-            {/* Description — more detailed */}
+            {/* Description */}
             <p style={{
                 fontSize: "0.92rem",
                 lineHeight: 1.85,
@@ -185,8 +226,8 @@ const DestinationRow = ({
             </p>
 
             {/* Best time chip */}
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <div style={{ width: "24px", height: "1px", background: "rgba(255,255,255,0.2)" }} />
+            <div style={{display: "flex", alignItems: "center", gap: "10px"}}>
+                <div style={{width: "24px", height: "1px", background: "rgba(255,255,255,0.2)"}}/>
                 <p style={{
                     fontSize: "0.55rem",
                     letterSpacing: "0.4em",
@@ -197,64 +238,63 @@ const DestinationRow = ({
                     Best time · {place.bestTime}
                 </p>
             </div>
-        </motion.div>
+        </Reveal>
     );
 
     const imageContent = (
-        <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            viewport={{ once: true, margin: "-80px" }}
-            style={{ position: "relative" }}
-        >
-            {/* Ambient glow — plain gradient (no blur filter) */}
-            <div style={{
-                position: "absolute",
-                inset: "-24px",
-                borderRadius: "50%",
-                background: "radial-gradient(closest-side, rgba(34,211,238,0.08), transparent)",
-                zIndex: 0,
-                pointerEvents: "none",
-            }} />
+        // Faint placeholder card — holds the space so nothing jumps when the image arrives
+        <div style={{
+            height: "520px",
+            borderRadius: "2.5rem",
+            background: "rgba(255,255,255,0.03)",
+        }}>
+            <Reveal y={40} delay={0.1} hold={!imgReady} style={{position: "relative"}}>
+                {/* Ambient glow — plain gradient (no blur filter) */}
+                <div style={{
+                    position: "absolute",
+                    inset: "-24px",
+                    borderRadius: "50%",
+                    background: "radial-gradient(closest-side, rgba(34,211,238,0.08), transparent)",
+                    zIndex: 0,
+                    pointerEvents: "none",
+                }}/>
 
-            {/* Image */}
-            <motion.img
-                src={place.image}
-                alt={place.name}
-                loading="lazy"
-                decoding="async"
-                whileHover={{ scale: 1.03 }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-                style={{
-                    position: "relative",
-                    zIndex: 1,
-                    width: "100%",
-                    height: "520px",
-                    objectFit: "cover",
-                    objectPosition: place.focus ?? "center",
-                    borderRadius: "2.5rem",
-                    display: "block",
-                }}
-            />
+                <img
+                    ref={imgRef}
+                    src={load ? place.image : undefined}
+                    alt={place.name}
+                    decoding="async"
+                    className="card-img"
+                    style={{
+                        position: "relative",
+                        zIndex: 1,
+                        width: "100%",
+                        height: "520px",
+                        objectFit: "cover",
+                        objectPosition: place.focus ?? "center",
+                        borderRadius: "2.5rem",
+                        display: "block",
+                    }}
+                />
 
-            {/* Subtle gradient on bottom of image */}
-            <div style={{
-                position: "absolute",
-                bottom: 0,
-                left: 0,
-                right: 0,
-                height: "40%",
-                borderRadius: "0 0 2.5rem 2.5rem",
-                background: "linear-gradient(to top, rgba(5,8,22,0.5), transparent)",
-                zIndex: 2,
-                pointerEvents: "none",
-            }} />
-        </motion.div>
+                {/* Subtle gradient on bottom of image */}
+                <div style={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: "40%",
+                    borderRadius: "0 0 2.5rem 2.5rem",
+                    background: "linear-gradient(to top, rgba(5,8,22,0.5), transparent)",
+                    zIndex: 2,
+                    pointerEvents: "none",
+                }}/>
+            </Reveal>
+        </div>
     );
 
     return (
-        <div style={{
+        <div ref={rowRef} style={{
             display: "grid",
             gridTemplateColumns: "1fr 1fr",
             gap: "0",
@@ -265,13 +305,13 @@ const DestinationRow = ({
         }}>
             {imageLeft ? (
                 <>
-                    <div style={{ order: 0 }}>{imageContent}</div>
-                    <div style={{ order: 1 }}>{textContent}</div>
+                    <div style={{order: 0}}>{imageContent}</div>
+                    <div style={{order: 1}}>{textContent}</div>
                 </>
             ) : (
                 <>
-                    <div style={{ order: 0 }}>{textContent}</div>
-                    <div style={{ order: 1 }}>{imageContent}</div>
+                    <div style={{order: 0}}>{textContent}</div>
+                    <div style={{order: 1}}>{imageContent}</div>
                 </>
             )}
         </div>

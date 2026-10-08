@@ -25,6 +25,7 @@ html {
 
 body {
     overflow-x: hidden;
+    overflow-x: clip;
     background: #050816;
     position: relative;
     min-height: 100vh;
@@ -46,6 +47,7 @@ html,
 body {
     width: 100%;
     overflow-x: hidden;
+    overflow-x: clip;
     background: #050816;
 }
 
@@ -227,7 +229,7 @@ section {
 /* ── Hero Ken Burns drift (compositor-only, gentle zoom — no panning) ── */
 @keyframes kenburns {
     0%, 100% { transform: scale(1); }
-    50%      { transform: scale(1.04); }
+    50%      { transform: scale(1.015); }
 }
 .kenburns {
     animation: kenburns 20s ease-in-out infinite;
@@ -239,18 +241,18 @@ section {
 .hero-title {
     letter-spacing: -0.05em;
     --avail: calc(100vw - 3rem);
-    font-size: max(2.25rem, min(6rem, calc(var(--avail) / var(--wem)), calc(42vh / var(--words))));
+    font-size: max(2.25rem, min(4.5rem, calc(var(--avail) / var(--wem)), calc(42vh / var(--words))));
 }
 @media (min-width: 768px) {
     .hero-title {
         --avail: calc(100vw - 6rem);
-        font-size: max(3rem, min(9rem, calc(var(--avail) / var(--wem)), calc(42vh / var(--words))));
+        font-size: max(3rem, min(6.5rem, calc(var(--avail) / var(--wem)), calc(42vh / var(--words))));
     }
 }
 @media (min-width: 1024px) {
     .hero-title {
         --avail: calc(100vw - 20rem);
-        font-size: max(3.5rem, min(13rem, calc(var(--avail) / var(--wem)), calc(42vh / var(--words))));
+        font-size: max(3.5rem, min(9rem, calc(var(--avail) / var(--wem)), calc(42vh / var(--words))));
     }
 }
 
@@ -294,4 +296,55 @@ html.lenis { scroll-behavior: auto; }
 @keyframes marquee-right {
     from { transform: translateX(-50%); }
     to   { transform: translateX(0%); }
+}
+
+/* ── Scroll reveals: CSS transitions (compositor-driven, off the main thread) ── */
+.reveal {
+    opacity: 0;
+    transform: translate(var(--rx, 0px), var(--ry, 0px));
+    transition:
+            opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1) var(--rd, 0s),
+            transform 0.9s cubic-bezier(0.22, 1, 0.36, 1) var(--rd, 0s);
+}
+.reveal.is-in {
+    opacity: 1;
+    transform: none; /* "none" lets the browser drop the GPU layer afterwards */
+}
+
+/* Card image hover zoom */
+.card-img { transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1); }
+@media (hover: hover) {
+    .card-img:hover { transform: scale(1.03); }
+}
+
+/* "Plan Your Trip" button */
+.story-cta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: none;
+    border: 1px solid rgba(34, 211, 238, 0.3);
+    border-radius: 999px;
+    padding: 14px 28px;
+    cursor: pointer;
+    color: #22d3ee;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    transition:
+            border-color 0.25s,
+            background 0.25s,
+            transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.story-cta:hover {
+    background: rgba(34, 211, 238, 0.08);
+    border-color: rgba(34, 211, 238, 0.6);
+    transform: translateX(6px);
+}
+.story-cta:active { transform: translateX(6px) scale(0.97); }
+
+@media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+    .kenburns { animation: none; }
 }

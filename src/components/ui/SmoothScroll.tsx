@@ -13,7 +13,7 @@ declare global {
 const SmoothScroll = ({ children }: Props) => {
     useEffect(() => {
         const lenis = new Lenis({
-            lerp: 0.08,
+            lerp: 0.15,
             smoothWheel: true,
             touchMultiplier: 2,
         });

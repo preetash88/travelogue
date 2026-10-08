@@ -72,7 +72,7 @@ function App() {
 
                 {/* RouteGate is INSIDE TransitionProvider — context works correctly */}
                 <RouteGate>
-                    <main className="relative overflow-x-hidden bg-[#050816] text-white">
+                    <main className="relative overflow-x-clip bg-[#050816] text-white">
                         <Routes>
                             <Route
                                 path="/"

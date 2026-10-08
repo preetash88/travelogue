@@ -217,29 +217,29 @@ const StateSlider = ({
         <section ref={sectionRef} className="relative h-screen w-full overflow-hidden">
 
             {/* ── Breadcrumb ──────────────────────────────────────────────── */}
-            <div style={{
-                position: "absolute", top: "88px", left: "48px", zIndex: 40,
-                display: "flex", alignItems: "center", gap: "10px",
-                pointerEvents: "all",
-            }}>
-                <button onClick={() => navigate("/")}
-                        style={{ background: "none", border: "none", cursor: "pointer", fontSize: "0.55rem", letterSpacing: "0.4em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", padding: 0, transition: "color 0.2s", textShadow: "0 1px 6px rgba(0,0,0,0.9)" }}
-                        onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,0.8)"}
-                        onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.35)"}>
-                    Lamhe
-                </button>
-                <span style={{ color: "rgba(255,255,255,0.25)", fontSize: "0.55rem", textShadow: "0 1px 4px rgba(0,0,0,0.9)" }}>→</span>
-                <button onClick={() => navigate("/")}
-                        style={{ background: "none", border: "none", cursor: "pointer", fontSize: "0.55rem", letterSpacing: "0.4em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", padding: 0, transition: "color 0.2s", textShadow: "0 1px 6px rgba(0,0,0,0.9)" }}
-                        onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,0.8)"}
-                        onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.35)"}>
-                    India
-                </button>
-                <span style={{ color: "rgba(255,255,255,0.25)", fontSize: "0.55rem", textShadow: "0 1px 4px rgba(0,0,0,0.9)" }}>→</span>
-                <span style={{ fontSize: "0.55rem", letterSpacing: "0.4em", textTransform: "uppercase", color: "#22d3ee", textShadow: "0 1px 6px rgba(0,0,0,0.9)" }}>
-                    {state.state}
-                </span>
-            </div>
+            {/*<div style={{*/}
+            {/*    position: "absolute", top: "88px", left: "48px", zIndex: 40,*/}
+            {/*    display: "flex", alignItems: "center", gap: "10px",*/}
+            {/*    pointerEvents: "all",*/}
+            {/*}}>*/}
+            {/*    <button onClick={() => navigate("/")}*/}
+            {/*            style={{ background: "none", border: "none", cursor: "pointer", fontSize: "0.55rem", letterSpacing: "0.4em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", padding: 0, transition: "color 0.2s", textShadow: "0 1px 6px rgba(0,0,0,0.9)" }}*/}
+            {/*            onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,0.8)"}*/}
+            {/*            onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.35)"}>*/}
+            {/*        Lamhe*/}
+            {/*    </button>*/}
+            {/*    <span style={{ color: "rgba(255,255,255,0.25)", fontSize: "0.55rem", textShadow: "0 1px 4px rgba(0,0,0,0.9)" }}>→</span>*/}
+            {/*    <button onClick={() => navigate("/")}*/}
+            {/*            style={{ background: "none", border: "none", cursor: "pointer", fontSize: "0.55rem", letterSpacing: "0.4em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)", padding: 0, transition: "color 0.2s", textShadow: "0 1px 6px rgba(0,0,0,0.9)" }}*/}
+            {/*            onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,0.8)"}*/}
+            {/*            onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.35)"}>*/}
+            {/*        India*/}
+            {/*    </button>*/}
+            {/*    <span style={{ color: "rgba(255,255,255,0.25)", fontSize: "0.55rem", textShadow: "0 1px 4px rgba(0,0,0,0.9)" }}>→</span>*/}
+            {/*    <span style={{ fontSize: "0.55rem", letterSpacing: "0.4em", textTransform: "uppercase", color: "#22d3ee", textShadow: "0 1px 6px rgba(0,0,0,0.9)" }}>*/}
+            {/*        {state.state}*/}
+            {/*    </span>*/}
+            {/*</div>*/}
 
             {/* ── Embla slides ────────────────────────────────────────────── */}
             <div className="embla h-full" ref={emblaRef}>
@@ -443,16 +443,26 @@ const StateSlider = ({
             </div>
 
             {/* ── State label (top centre) ─────────────────────────────────── */}
-            <motion.div
-                key={state.state}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                className="absolute top-24 left-1/2 z-30 -translate-x-1/2 text-center pointer-events-none"
-            >
-                <p className="text-xs uppercase tracking-[0.6em] text-white/35">{state.state}</p>
-                <p className="text-[10px] tracking-[0.3em] text-white/20 mt-1 italic">{state.tagline}</p>
-            </motion.div>
+            {/*<motion.div*/}
+            {/*    key={state.state}*/}
+            {/*    initial={{ opacity: 0, y: -10 }}*/}
+            {/*    animate={{ opacity: 1, y: 0 }}*/}
+            {/*    transition={{ duration: 0.6 }}*/}
+            {/*    className="absolute top-24 left-1/2 z-30 -translate-x-1/2 text-center pointer-events-none"*/}
+            {/*>*/}
+            {/*    <p*/}
+            {/*        className="text-lg font-semibold uppercase tracking-[0.5em] text-white/80 md:text-2xl"*/}
+            {/*        style={{ textShadow: "0 2px 16px rgba(0,0,0,0.55)" }}*/}
+            {/*    >*/}
+            {/*        {state.state}*/}
+            {/*    </p>*/}
+            {/*    <p*/}
+            {/*        className="mt-2 text-xs italic tracking-[0.25em] text-white/85 md:text-sm"*/}
+            {/*        style={{ textShadow: "0 1px 10px rgba(0,0,0,0.6)" }}*/}
+            {/*    >*/}
+            {/*        {state.tagline}*/}
+            {/*    </p>*/}
+            {/*</motion.div>*/}
 
         </section>
     );
