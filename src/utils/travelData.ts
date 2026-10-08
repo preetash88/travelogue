@@ -9,6 +9,14 @@ import italy from "../assets/destinations/italy1.avif";
 import netherlands from "../assets/destinations/netherlands1.avif";
 import spain from "../assets/destinations/spain1.avif";
 import sydney from "../assets/destinations/sydney1.avif";
+import jaipur from "../assets/destinations/rajasthan/jaipur_amer_fort.avif";
+import pushkar from "../assets/destinations/rajasthan/pushkar_camel_fair.avif";
+import jodhpur from "../assets/destinations/rajasthan/jodhpur_blue_city.avif";
+import jaisalmer from "../assets/destinations/rajasthan/jaisalmer_havelis.avif";
+import udaipur from "../assets/destinations/rajasthan/udaipur_lake.avif";
+import ranthambore from "../assets/destinations/rajasthan/ranthambore_tiger.avif";
+import chittorgarh from "../assets/destinations/rajasthan/chittorgarh_fort.avif";
+import mountAbu from "../assets/destinations/rajasthan/mount_abu.avif";
 
 // Varanasi placeholder — replace with your high-res Ganga Aarti / Ghat image
 // when you source a copyright-free one. Drop it into src/assets/destinations/
@@ -171,11 +179,14 @@ export const indiaStates: IndiaState[] = [
         capital: "Jaipur",
         tagline: "Land of kings, forts, and the golden desert.",
         places: [
-            { name: "Jaisalmer", tagline: "The Golden City in the Thar", description: "Sand dunes at twilight, camel safaris under a billion stars, and a fort that rises from the desert like a mirage.", image: ph.antarctica, bestTime: "Oct – Feb", type: "Desert" },
-            { name: "Udaipur", tagline: "The City of Lakes", description: "Palaces floating on still lakes, rooftop dinners, and sunsets that turn the whole city gold.", image: ph.netherlands, bestTime: "Sep – Mar", type: "Heritage" },
-            { name: "Jodhpur", tagline: "The Blue City", description: "A blue labyrinth of houses beneath the mighty Mehrangarh Fort — every alley is a photograph.", image: ph.italy, bestTime: "Oct – Mar", type: "Heritage" },
-            { name: "Ranthambore", tagline: "Where tigers rule the ruins", description: "India's most cinematic tiger reserve — spot a Bengal tiger against a 10th-century fort backdrop.", image: ph.yosemite, bestTime: "Oct – Jun", type: "Wildlife" },
-            { name: "Pushkar", tagline: "The sacred lake town", description: "The world's only Brahma temple, pink-tinged sunrises over the ghats, and the legendary Pushkar Camel Fair.", image: ph.bali, bestTime: "Oct – Mar", type: "Spiritual" },
+            { name: "Jaipur", tagline: "The Pink City", description: "Amer Fort's mirrored halls and ramparts above Maota Lake, with elephant-era ramps and sunrise light on sandstone.", image: jaipur, bestTime: "Oct – Mar", type: "Heritage" },
+            { name: "Pushkar", tagline: "The sacred lake town", description: "The world's only Brahma temple, pink-tinged sunrises over the ghats, and the legendary Pushkar Camel Fair.", image: pushkar, bestTime: "Oct – Mar", type: "Spiritual" },
+            { name: "Jodhpur", tagline: "The Blue City", description: "A blue labyrinth of houses beneath the mighty Mehrangarh Fort — every alley is a photograph.", image: jodhpur, bestTime: "Oct – Mar", type: "Heritage" },
+            { name: "Jaisalmer", tagline: "The Golden City in the Thar", description: "Honey-coloured sandstone havelis with intricately carved facades, inside a living fort rising from the desert.", image: jaisalmer, bestTime: "Oct – Feb", type: "Heritage" },
+            { name: "Udaipur", tagline: "The City of Lakes", description: "Palaces floating on still lakes, rooftop dinners, and sunsets that turn the whole city gold.", image: udaipur, bestTime: "Sep – Mar", type: "Heritage" },
+            { name: "Ranthambore", tagline: "Where tigers rule the ruins", description: "India's most cinematic tiger reserve — spot a Bengal tiger against a 10th-century fort backdrop.", image: ranthambore, bestTime: "Oct – Jun", type: "Wildlife" },
+            { name: "Chittorgarh", tagline: "The fort of valour", description: "One of Asia's largest forts, with towering victory pillars, palaces and temples that carry centuries of Rajput legend.", image: chittorgarh, bestTime: "Oct – Mar", type: "Heritage" },
+            { name: "Mount Abu", tagline: "Rajasthan's only hill station", description: "Cool forest air, Nakki Lake, and the exquisite marble Dilwara temples above the desert plains.", image: mountAbu, bestTime: "Feb – Jun, Sep – Nov", type: "Hills" },
         ],
     },
     {
