@@ -147,7 +147,7 @@ const DestinationRow = ({
     const [leaving, setLeaving] = useState<number | null>(null);
     const [tick, setTick] = useState(0);
     const [flow, setFlow] = useState<"next" | "prev">("next"); // which way the last change went
-    const stackCount = Math.min(3, photos.length - 1);       // cards peeking out below
+    const stackCount = photos.length > 1 ? 1 : 0; // show exactly one card behind
 
     // Start fetching: when near the screen, OR a little after load (staggered),
     // OR instantly when a long scroll is about to happen.
