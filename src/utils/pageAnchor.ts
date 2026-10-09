@@ -27,7 +27,7 @@ export const smoothScrollToY = (y: number) => {
         return;
     }
 
-    const duration = Math.min(3.2, Math.max(1.1, distance / 2000));
+    const duration = Math.min(1.8, Math.max(0.5, distance / 3200));
 
     // While we glide: freeze hover effects + the hero drift (see index.css).
     root.dataset.autoScroll = "1";
