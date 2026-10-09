@@ -71,7 +71,7 @@ const DestinationStories = ({state, onExploreMore}: Props) => {
     }, []);
 
     return (
-        <section style={{background: "#050816", padding: "0 0 80px"}}>
+        <section className="stories" style={{background: "#050816", padding: "0 0 80px"}}>
 
             {/* Section label */}
             <div style={{padding: "72px 48px 0"}}>
@@ -227,10 +227,10 @@ const DestinationRow = ({
         >
             {/* Index number */}
             <p style={{
-                fontSize: "0.52rem",
+                fontSize: "0.75rem",
                 letterSpacing: "0.5em",
                 textTransform: "uppercase",
-                color: "rgba(34,211,238,0.5)",
+                color: "rgba(34,211,238,0.9)",
                 fontWeight: 600,
                 margin: 0,
             }}>
@@ -251,9 +251,9 @@ const DestinationRow = ({
 
             {/* Tagline */}
             <p style={{
-                fontSize: "1rem",
+                fontSize: "1.2rem",
                 fontStyle: "italic",
-                color: "rgba(34,211,238,0.65)",
+                color: "rgba(34,211,238,0.95)",
                 lineHeight: 1.5,
                 margin: 0,
             }}>
@@ -262,9 +262,9 @@ const DestinationRow = ({
 
             {/* Description */}
             <p style={{
-                fontSize: "0.92rem",
+                fontSize: "0.98rem",
                 lineHeight: 1.85,
-                color: "rgba(255,255,255,0.52)",
+                color: "rgba(255,255,255,0.68)",
                 maxWidth: "480px",
                 margin: 0,
             }}>
@@ -275,10 +275,10 @@ const DestinationRow = ({
             <div style={{display: "flex", alignItems: "center", gap: "10px"}}>
                 <div style={{width: "24px", height: "1px", background: "rgba(255,255,255,0.2)"}}/>
                 <p style={{
-                    fontSize: "0.55rem",
+                    fontSize: "0.68rem",
                     letterSpacing: "0.4em",
                     textTransform: "uppercase",
-                    color: "rgba(255,255,255,0.3)",
+                    color: "rgba(255,255,255,0.55)",
                     margin: 0,
                 }}>
                     Best time · {place.bestTime}
@@ -289,115 +289,113 @@ const DestinationRow = ({
 
     const imageContent = (
         // Faint placeholder card — holds the space so nothing jumps when the image arrives
-        <div style={{
-            height: "520px",
-            borderRadius: "2.5rem",
-            background: "rgba(255,255,255,0.03)",
-        }}>
-            <Reveal y={40} delay={0.1} hold={!imgReady}>
-                <div
-                    className="gallery"
-                    data-active={active}
-                    data-flow={flow}
-                >
-                    {/* Cards stacked underneath — their bottom edges peek out */}
-                    {Array.from({length: stackCount}, (_, i) => stackCount - i).map(k => (
-                        <div
-                            key={`stack-${tick}-${k}`}
-                            className={`gallery__stack ${tick > 0 ? "gallery__stack--shift" : ""}`}
-                            style={{"--k": k, "--from": flow === "next" ? k + 1 : k - 1} as CSSProperties}
-                        >
+        <div className="gallery-slot">
+            <div className="gallery-holder">
+                <Reveal y={40} delay={0.1} hold={!imgReady}>
+                    <div
+                        className="gallery"
+                        data-active={active}
+                        data-flow={flow}
+                    >
+                        {/* Cards stacked underneath — their bottom edges peek out */}
+                        {Array.from({length: stackCount}, (_, i) => stackCount - i).map(k => (
+                            <div
+                                key={`stack-${tick}-${k}`}
+                                className={`gallery__stack ${tick > 0 ? "gallery__stack--shift" : ""}`}
+                                style={{"--k": k, "--from": flow === "next" ? k + 1 : k - 1} as CSSProperties}
+                            >
+                                <img
+                                    src={load ? photos[(active + k) % photos.length] : undefined}
+                                    alt=""
+                                    aria-hidden="true"
+                                    decoding="async"
+                                    style={{objectPosition: place.focus ?? "center"}}
+                                />
+                            </div>
+                        ))}
+
+                        <div className="gallery__zoom">
+                            {leaving !== null && (
+                                <img
+                                    key={`out-${tick}`}
+                                    src={photos[leaving]}
+                                    alt=""
+                                    aria-hidden="true"
+                                    decoding="async"
+                                    className="gallery__layer gallery__layer--out"
+                                    style={{objectPosition: place.focus ?? "center"}}
+                                />
+                            )}
                             <img
-                                src={load ? photos[(active + k) % photos.length] : undefined}
-                                alt=""
-                                aria-hidden="true"
+                                key={`in-${tick}`}
+                                ref={imgRef}
+                                src={load ? photos[active] : undefined}
+                                alt={`${place.name} — photo ${active + 1} of ${photos.length}`}
                                 decoding="async"
+                                className={`gallery__layer ${leaving !== null ? "gallery__layer--in" : ""}`}
                                 style={{objectPosition: place.focus ?? "center"}}
                             />
                         </div>
-                    ))}
 
-                    <div className="gallery__zoom">
-                        {leaving !== null && (
-                            <img
-                                key={`out-${tick}`}
-                                src={photos[leaving]}
-                                alt=""
-                                aria-hidden="true"
-                                decoding="async"
-                                className="gallery__layer gallery__layer--out"
-                                style={{objectPosition: place.focus ?? "center"}}
-                            />
+                        {/* Subtle gradient on bottom of image */}
+                        <div style={{
+                            position: "absolute",
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            height: "40%",
+                            borderRadius: "0 0 2.5rem 2.5rem",
+                            background: "linear-gradient(to top, rgba(5,8,22,0.3), transparent)",
+                            zIndex: 3,
+                            pointerEvents: "none",
+                        }}/>
+
+                        {photos.length > 1 && (
+                            <>
+                                {/* Arrows on BOTH sides of every card */}
+                                <button
+                                    type="button"
+                                    className="gallery__arrow gallery__arrow--left"
+                                    onClick={() => step(-1)}
+                                    aria-label={`Previous photo of ${place.name}`}
+                                >
+                                    <ChevronLeft size={22}/>
+                                </button>
+                                <button
+                                    type="button"
+                                    className="gallery__arrow gallery__arrow--right"
+                                    onClick={() => step(1)}
+                                    aria-label={`Next photo of ${place.name}`}
+                                >
+                                    <ChevronRight size={22}/>
+                                </button>
+
+                                <div className="gallery__dots">
+                                    {photos.map((_, i) => (
+                                        <button
+                                            key={i}
+                                            type="button"
+                                            aria-label={`Show photo ${i + 1} of ${place.name}`}
+                                            onClick={() => goTo(i, i > active ? "next" : "prev")}
+                                            className={`gallery__dot ${i === active ? "is-active" : ""}`}
+                                        />
+                                    ))}
+                                </div>
+                            </>
                         )}
-                        <img
-                            key={`in-${tick}`}
-                            ref={imgRef}
-                            src={load ? photos[active] : undefined}
-                            alt={`${place.name} — photo ${active + 1} of ${photos.length}`}
-                            decoding="async"
-                            className={`gallery__layer ${leaving !== null ? "gallery__layer--in" : ""}`}
-                            style={{objectPosition: place.focus ?? "center"}}
-                        />
                     </div>
-
-                    {/* Subtle gradient on bottom of image */}
-                    <div style={{
-                        position: "absolute",
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        height: "40%",
-                        borderRadius: "0 0 2.5rem 2.5rem",
-                        background: "linear-gradient(to top, rgba(5,8,22,0.3), transparent)",
-                        zIndex: 3,
-                        pointerEvents: "none",
-                    }}/>
-
-                    {photos.length > 1 && (
-                        <>
-                            {/* Arrows on BOTH sides of every card */}
-                            <button
-                                type="button"
-                                className="gallery__arrow gallery__arrow--left"
-                                onClick={() => step(-1)}
-                                aria-label={`Previous photo of ${place.name}`}
-                            >
-                                <ChevronLeft size={22}/>
-                            </button>
-                            <button
-                                type="button"
-                                className="gallery__arrow gallery__arrow--right"
-                                onClick={() => step(1)}
-                                aria-label={`Next photo of ${place.name}`}
-                            >
-                                <ChevronRight size={22}/>
-                            </button>
-
-                            <div className="gallery__dots">
-                                {photos.map((_, i) => (
-                                    <button
-                                        key={i}
-                                        type="button"
-                                        aria-label={`Show photo ${i + 1} of ${place.name}`}
-                                        onClick={() => goTo(i, i > active ? "next" : "prev")}
-                                        className={`gallery__dot ${i === active ? "is-active" : ""}`}
-                                    />
-                                ))}
-                            </div>
-                        </>
-                    )}
-                </div>
-            </Reveal>
+                </Reveal>
+            </div>
         </div>
     );
 
     return (
         <div id={storyId(index)} ref={rowRef} style={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr",
+            gridTemplateColumns: imageLeft ? "minmax(0, 1.2fr) minmax(0, 0.8fr)" : "minmax(0, 0.8fr) minmax(0, 1.2fr)",
             gap: "0",
             alignItems: "center",
-            minHeight: "600px",
+            minHeight: "calc(var(--card-h) + 150px)",
             padding: "48px 48px",
             borderBottom: "1px solid rgba(255,255,255,0.04)",
         }}>

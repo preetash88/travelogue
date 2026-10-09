@@ -1,6 +1,6 @@
 import {MapPin, Menu, X} from "lucide-react";
 import {motion} from "framer-motion";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useMatch, useNavigate} from "react-router-dom";
 import {uniqueIndiaStates} from "../../utils/travelData";
 import MobileMenu from "./MobileMenu";
@@ -17,6 +17,21 @@ const toSlug = (name: string): string =>
 const Navbar = ({onContactClick, onDestinationsClick}: Props) => {
     const [open, setOpen] = useState(false);
     const navigate = useNavigate();
+
+    // The dark fade behind the bar turns on once the hero fills less than half the screen
+    // (i.e. you have scrolled more than 50% of a viewport). Change SCRIM_AT to tune it.
+    const SCRIM_AT = 0.5;
+    const [scrimOn, setScrimOn] = useState(false);
+    useEffect(() => {
+        const check = () => setScrimOn(window.scrollY > window.innerHeight * SCRIM_AT);
+        check();
+        window.addEventListener("scroll", check, {passive: true});
+        window.addEventListener("resize", check);
+        return () => {
+            window.removeEventListener("scroll", check);
+            window.removeEventListener("resize", check);
+        };
+    }, []);
 
     // Which state page are we on? (undefined on the home page)
     const stateMatch = useMatch("/in/:stateSlug/*");
@@ -51,6 +66,13 @@ const Navbar = ({onContactClick, onDestinationsClick}: Props) => {
                 className="fixed left-0 top-0 z-50 flex w-full items-center justify-between"
                 style={{padding: "10px 40px 0 25px"}}
             >
+                {/* Soft fade so page content never collides with the logo / links */}
+                <div
+                    aria-hidden="true"
+                    className="navbar-scrim pointer-events-none absolute inset-x-0 top-0 -z-10"
+                    style={{opacity: scrimOn ? 3.0 : 0}}
+                />
+
                 {/* Logo — showCover on mousedown so cover is up before navigate fires */}
                 <div
                     className="flex flex-col"
@@ -87,11 +109,12 @@ const Navbar = ({onContactClick, onDestinationsClick}: Props) => {
                             transition={{duration: 0.6, delay: 0.4}}
                             onClick={() => (window as any).__lenis?.scrollTo(0, {duration: 1.2})}
                             aria-label={`You are exploring ${currentState.state}. Back to top`}
-                            className="state-pill pointer-events-auto flex items-center gap-3 rounded-full border border-cyan-300/30 bg-[#050816]/60 py-2 pl-3 pr-6"
+                            data-scrim={scrimOn ? "on" : "off"}
+                            className="state-pill pointer-events-auto flex items-center gap-3 rounded-full border py-2 pl-3 pr-6"
                         >
     <span className="relative flex h-6 w-6 items-center justify-center">
         <span className="state-pill__pulse"/>
-        <MapPin size={14} className="relative text-cyan-300"/>
+        <MapPin size={14} className="state-pill__pin relative text-cyan-300"/>
     </span>
                             <span className="hidden text-[10px] uppercase tracking-[0.35em] text-cyan-200/60 xl:inline">
         Exploring
