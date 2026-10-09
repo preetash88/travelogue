@@ -20,14 +20,15 @@ const SmoothScroll = ({ children }: Props) => {
 
         window.__lenis = lenis;
 
+        let rafId = 0;
         function raf(time: number) {
             lenis.raf(time);
-            requestAnimationFrame(raf);
+            rafId = requestAnimationFrame(raf);
         }
-
-        requestAnimationFrame(raf);
+        rafId = requestAnimationFrame(raf);
 
         return () => {
+            cancelAnimationFrame(rafId); // stop the loop (it used to keep running after unmount)
             lenis.destroy();
             window.__lenis = undefined;
         };

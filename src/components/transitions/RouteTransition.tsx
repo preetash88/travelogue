@@ -21,7 +21,7 @@ import { useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { uniqueIndiaStates } from "../../utils/travelData";
 import varanasi from "../../assets/destinations/ghat_benaras.avif";
-import { showCover, hideCover } from "../../utils/routeBlock";
+import { hideCover } from "../../utils/routeBlock";
 
 declare global {
     interface Window { __lenis?: { scrollTo: (n: number, o?: object) => void }; }

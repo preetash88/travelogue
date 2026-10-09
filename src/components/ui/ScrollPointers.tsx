@@ -1,29 +1,8 @@
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useState } from "react";
-import { BOOKING_ID, HERO_ID, storyId } from "../../utils/pageAnchor.ts";
+import { HERO_ID, scrollToBottom, scrollToTop, storyId } from "../../utils/pageAnchor";
 
-const STORY_OFFSET = -90;   // space left above a destination card (clears the navbar)
-const BOOKING_OFFSET = -60;
-const BUTTON_GAP = 56;      // vertical distance between the two arrows
-
-/** Page sections from top to bottom, with the scroll position that lines each one up. */
-const getStops = (count: number): number[] => {
-    const stops: number[] = [];
-    const add = (id: string, offset: number) => {
-        const el = document.getElementById(id);
-        if (el) stops.push(el.getBoundingClientRect().top + window.scrollY + offset);
-    };
-    add(HERO_ID, 0);
-    for (let i = 0; i < count; i++) add(storyId(i), STORY_OFFSET);
-    add(BOOKING_ID, BOOKING_OFFSET);
-    return stops;
-};
-
-/** Next stop below (dir = 1) or above (dir = -1) the current scroll position. */
-export const pickStop = (stops: number[], y: number, dir: 1 | -1): number | undefined =>
-    dir === 1
-        ? stops.find(s => s > y + 12)
-        : [...stops].reverse().find(s => s < y - 12);
+const BUTTON_GAP = 56; // vertical distance between the two arrows
 
 const ScrollPointers = ({ count, resetKey }: { count: number; resetKey: string }) => {
     const [heroVisible, setHeroVisible] = useState(true);
@@ -52,14 +31,6 @@ const ScrollPointers = ({ count, resetKey }: { count: number; resetKey: string }
         return () => cleanups.forEach(fn => fn());
     }, [count, resetKey]);
 
-    const go = (dir: 1 | -1) => {
-        const target = pickStop(getStops(count), window.scrollY, dir);
-        if (target === undefined) return;
-        const lenis = (window as any).__lenis;
-        if (lenis) lenis.scrollTo(target, { duration: 1.2 });
-        else window.scrollTo({ top: target, behavior: "smooth" });
-    };
-
     const showUp = !heroVisible;
     const showDown = !pastLast;
 
@@ -76,20 +47,20 @@ const ScrollPointers = ({ count, resetKey }: { count: number; resetKey: string }
     return (
         <div className="pointer-events-none fixed bottom-8 right-6 z-40 h-11 w-11">
             <button
-                aria-label="Previous section"
+                aria-label="Back to top"
                 data-show={showUp}
                 tabIndex={showUp ? 0 : -1}
-                onClick={() => go(-1)}
+                onClick={scrollToTop}
                 className={base}
                 style={pointerStyle(showUp, showDown ? -BUTTON_GAP : 0)}
             >
                 <ChevronUp size={20} />
             </button>
             <button
-                aria-label="Next section"
+                aria-label="Go to bottom of page"
                 data-show={showDown}
                 tabIndex={showDown ? 0 : -1}
-                onClick={() => go(1)}
+                onClick={scrollToBottom}
                 className={base}
                 style={pointerStyle(showDown, 0)}
             >

@@ -1,7 +1,7 @@
-import { AnimatePresence, motion } from "framer-motion";
-import { useState, useRef, useEffect } from "react";
-import { X, ChevronDown, Globe, MapPin, Search } from "lucide-react";
-import { uniqueIndiaStates, type IndiaState } from "../../utils/travelData";
+import {AnimatePresence, motion} from "framer-motion";
+import {useState, useRef, useEffect} from "react";
+import {X, Search} from "lucide-react";
+import {uniqueIndiaStates, type IndiaState} from "../../utils/travelData";
 
 // ── Country data — expand this when Bhutan/Sri Lanka/Maldives are ready ───────
 const COUNTRIES = [
@@ -47,7 +47,7 @@ interface Props {
 
 const R = "14px";
 
-const DestinationPicker = ({ open, onClose, onExplore }: Props) => {
+const DestinationPicker = ({open, onClose, onExplore}: Props) => {
     const [step, setStep] = useState<"country" | "state">("country");
     const [selectedCountry, setSelectedCountry] = useState(COUNTRIES[0]);
     const [selectedState, setSelectedState] = useState<IndiaState | null>(null);
@@ -90,7 +90,7 @@ const DestinationPicker = ({ open, onClose, onExplore }: Props) => {
         setTimeout(() => {
             onExplore(selectedCountry.name, selectedState);
             const el = document.getElementById("state-explorer");
-            if (el) el.scrollIntoView({ behavior: "smooth" });
+            if (el) el.scrollIntoView({behavior: "smooth"});
         }, 350);
     };
 
@@ -98,9 +98,9 @@ const DestinationPicker = ({ open, onClose, onExplore }: Props) => {
         <AnimatePresence>
             {open && (
                 <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
+                    initial={{opacity: 0}}
+                    animate={{opacity: 1}}
+                    exit={{opacity: 0}}
                     onClick={onClose}
                     style={{
                         position: "fixed", inset: 0, zIndex: 99990,
@@ -114,10 +114,10 @@ const DestinationPicker = ({ open, onClose, onExplore }: Props) => {
                     }}
                 >
                     <motion.div
-                        initial={{ scale: 0.92, opacity: 0, y: 32 }}
-                        animate={{ scale: 1, opacity: 1, y: 0 }}
-                        exit={{ scale: 0.92, opacity: 0, y: 32 }}
-                        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                        initial={{scale: 0.92, opacity: 0, y: 32}}
+                        animate={{scale: 1, opacity: 1, y: 0}}
+                        exit={{scale: 0.92, opacity: 0, y: 32}}
+                        transition={{duration: 0.4, ease: [0.22, 1, 0.36, 1]}}
                         onClick={e => e.stopPropagation()}
                         style={{
                             position: "relative",
@@ -161,7 +161,7 @@ const DestinationPicker = ({ open, onClose, onExplore }: Props) => {
                                     >
                                         Country
                                     </button>
-                                    <span style={{ color: "rgba(255,255,255,0.2)", fontSize: "0.6rem" }}>›</span>
+                                    <span style={{color: "rgba(255,255,255,0.2)", fontSize: "0.6rem"}}>›</span>
                                     <span style={{
                                         fontSize: "0.6rem",
                                         letterSpacing: "0.4em",
@@ -172,7 +172,7 @@ const DestinationPicker = ({ open, onClose, onExplore }: Props) => {
                                     </span>
                                     {selectedState && (
                                         <>
-                                            <span style={{ color: "rgba(255,255,255,0.2)", fontSize: "0.6rem" }}>›</span>
+                                            <span style={{color: "rgba(255,255,255,0.2)", fontSize: "0.6rem"}}>›</span>
                                             <span style={{
                                                 fontSize: "0.6rem",
                                                 letterSpacing: "0.3em",
@@ -188,10 +188,10 @@ const DestinationPicker = ({ open, onClose, onExplore }: Props) => {
                                 <AnimatePresence mode="wait">
                                     <motion.div
                                         key={step}
-                                        initial={{ opacity: 0, y: 8 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -8 }}
-                                        transition={{ duration: 0.25 }}
+                                        initial={{opacity: 0, y: 8}}
+                                        animate={{opacity: 1, y: 0}}
+                                        exit={{opacity: 0, y: -8}}
+                                        transition={{duration: 0.25}}
                                     >
                                         <h2 style={{
                                             fontSize: "clamp(1.4rem, 3vw, 2rem)",
@@ -242,22 +242,22 @@ const DestinationPicker = ({ open, onClose, onExplore }: Props) => {
                                     e.currentTarget.style.color = "rgba(255,255,255,0.4)";
                                 }}
                             >
-                                <X size={14} />
+                                <X size={14}/>
                             </button>
                         </div>
 
                         {/* ── Content ─────────────────────────────────────── */}
-                        <div style={{ padding: "24px 32px 32px" }}>
+                        <div style={{padding: "24px 32px 32px"}}>
                             <AnimatePresence mode="wait">
 
                                 {/* STEP 1 — Country */}
                                 {step === "country" && (
                                     <motion.div
                                         key="country"
-                                        initial={{ opacity: 0, x: 20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, x: -20 }}
-                                        transition={{ duration: 0.3 }}
+                                        initial={{opacity: 0, x: 20}}
+                                        animate={{opacity: 1, x: 0}}
+                                        exit={{opacity: 0, x: -20}}
+                                        transition={{duration: 0.3}}
                                     >
                                         <div style={{
                                             display: "grid",
@@ -267,8 +267,8 @@ const DestinationPicker = ({ open, onClose, onExplore }: Props) => {
                                             {COUNTRIES.map(country => (
                                                 <motion.button
                                                     key={country.code}
-                                                    whileHover={country.available ? { scale: 1.02, y: -2 } : {}}
-                                                    whileTap={country.available ? { scale: 0.98 } : {}}
+                                                    whileHover={country.available ? {scale: 1.02, y: -2} : {}}
+                                                    whileTap={country.available ? {scale: 0.98} : {}}
                                                     onClick={() => handleCountrySelect(country)}
                                                     style={{
                                                         padding: "20px",
@@ -306,7 +306,8 @@ const DestinationPicker = ({ open, onClose, onExplore }: Props) => {
                                                             Soon
                                                         </span>
                                                     )}
-                                                    <div style={{ fontSize: "2rem", marginBottom: "10px", lineHeight: 1 }}>
+                                                    <div
+                                                        style={{fontSize: "2rem", marginBottom: "10px", lineHeight: 1}}>
                                                         {country.flag}
                                                     </div>
                                                     <p style={{
@@ -335,10 +336,10 @@ const DestinationPicker = ({ open, onClose, onExplore }: Props) => {
                                 {step === "state" && (
                                     <motion.div
                                         key="state"
-                                        initial={{ opacity: 0, x: 20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, x: -20 }}
-                                        transition={{ duration: 0.3 }}
+                                        initial={{opacity: 0, x: 20}}
+                                        animate={{opacity: 1, x: 0}}
+                                        exit={{opacity: 0, x: -20}}
+                                        transition={{duration: 0.3}}
                                     >
                                         {/* Search */}
                                         <div style={{
@@ -351,7 +352,7 @@ const DestinationPicker = ({ open, onClose, onExplore }: Props) => {
                                             padding: "10px 16px",
                                             marginBottom: "14px",
                                         }}>
-                                            <Search size={14} color="rgba(255,255,255,0.3)" />
+                                            <Search size={14} color="rgba(255,255,255,0.3)"/>
                                             <input
                                                 ref={searchRef}
                                                 value={stateSearch}
@@ -369,9 +370,15 @@ const DestinationPicker = ({ open, onClose, onExplore }: Props) => {
                                             {stateSearch && (
                                                 <button
                                                     onClick={() => setStateSearch("")}
-                                                    style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.3)", display: "flex" }}
+                                                    style={{
+                                                        background: "none",
+                                                        border: "none",
+                                                        cursor: "pointer",
+                                                        color: "rgba(255,255,255,0.3)",
+                                                        display: "flex"
+                                                    }}
                                                 >
-                                                    <X size={12} />
+                                                    <X size={12}/>
                                                 </button>
                                             )}
                                         </div>
@@ -387,15 +394,15 @@ const DestinationPicker = ({ open, onClose, onExplore }: Props) => {
                                             gridTemplateColumns: "1fr 1fr",
                                             gap: "8px",
                                         }}
-                                            onWheel={e => e.stopPropagation()}
+                                             onWheel={e => e.stopPropagation()}
                                         >
                                             {filteredStates.map(state => {
                                                 const isSelected = selectedState?.state === state.state;
                                                 return (
                                                     <motion.button
                                                         key={state.state}
-                                                        whileHover={{ scale: 1.01 }}
-                                                        whileTap={{ scale: 0.98 }}
+                                                        whileHover={{scale: 1.01}}
+                                                        whileTap={{scale: 0.98}}
                                                         onClick={() => setSelectedState(state)}
                                                         style={{
                                                             padding: "12px 16px",
@@ -450,8 +457,8 @@ const DestinationPicker = ({ open, onClose, onExplore }: Props) => {
                                             alignItems: "center",
                                         }}>
                                             <motion.button
-                                                whileHover={selectedState ? { scale: 1.02 } : {}}
-                                                whileTap={selectedState ? { scale: 0.97 } : {}}
+                                                whileHover={selectedState ? {scale: 1.02} : {}}
+                                                whileTap={selectedState ? {scale: 0.97} : {}}
                                                 onClick={handleExplore}
                                                 disabled={!selectedState}
                                                 style={{

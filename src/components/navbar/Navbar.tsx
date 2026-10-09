@@ -38,7 +38,11 @@ const Navbar = ({onContactClick, onDestinationsClick}: Props) => {
 
     return (
         <>
-            <MobileMenu open={open} onClose={() => setOpen(false)} onContactClick={onContactClick}/>
+            <MobileMenu
+                open={open} onClose={() => setOpen(false)}
+                onContactClick={onContactClick}
+                onDestinationsClick={onDestinationsClick ?? goToExplorer}
+            />
 
             <motion.nav
                 initial={{y: -80, opacity: 0}}

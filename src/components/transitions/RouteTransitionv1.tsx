@@ -4,8 +4,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { uniqueIndiaStates } from "../../utils/travelData";
 import varanasi from "../../assets/destinations/ghat_benaras.avif";
 
-declare global { interface Window { __lenis?: { scrollTo: (n: number, o?: object) => void } } }
-
 // ── Build slug → state image map once at module level ────────────────────────
 const toSlug = (name: string) =>
     name.toLowerCase().replace(/[()]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");

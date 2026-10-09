@@ -76,10 +76,9 @@ img {
     /* paint-order trick makes the stroke go outward, fattening the letterforms */
     -webkit-text-stroke: 0.6px rgb(255, 255, 255);
     paint-order: stroke fill;
-    text-shadow:
-        0 1px 3px rgba(0, 0, 0, 0.95),
-        0 2px 14px rgba(0, 0, 0, 0.7),
-        0 0 40px rgba(0, 0, 0, 0.4);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95),
+    0 2px 14px rgba(0, 0, 0, 0.7),
+    0 0 40px rgba(0, 0, 0, 0.4);
 }
 
 /* Subtext under LAMHE */
@@ -97,13 +96,12 @@ img {
 /* Nav links — no pill, no blur, readable over any hero image */
 .navbar-link {
     position: relative;
-    font-size: 1rem;       /* 13px */
+    font-size: 1rem; /* 13px */
     font-weight: 500;
     letter-spacing: 0.06em;
     color: rgba(255, 255, 255, 0.836);
-    text-shadow:
-        0 1px 4px rgba(0, 0, 0, 0.85),
-        0 2px 10px rgba(0, 0, 0, 0.6);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.85),
+    0 2px 10px rgba(0, 0, 0, 0.6);
     transition: color 0.25s ease, letter-spacing 0.25s ease;
     cursor: pointer;
     background: none;
@@ -126,9 +124,8 @@ img {
 .navbar-link:hover {
     color: #ffffff;
     letter-spacing: 0.1em;
-    text-shadow:
-        0 0 12px rgba(34, 211, 238, 0.5),
-        0 1px 4px rgba(0, 0, 0, 0.85);
+    text-shadow: 0 0 12px rgba(34, 211, 238, 0.5),
+    0 1px 4px rgba(0, 0, 0, 0.85);
 }
 
 .navbar-link:hover::after {
@@ -168,34 +165,51 @@ img {
 /*}*/
 
 /* ── Ambient glow (top-left) ─────────────────────────────────────────── */
-body::after {
-    content: "";
-    position: fixed;
-    top: -20%;
-    left: -10%;
-    width: 600px;
-    height: 600px;
-    background: radial-gradient(
-        circle,
-        rgba(0, 180, 255, 0.12),
-        transparent 70%
-    );
-    filter: blur(100px);
-    z-index: -1;
-    pointer-events: none;
-}
+/*body::after {*/
+/*    content: "";*/
+/*    position: fixed;*/
+/*    top: -20%;*/
+/*    left: -10%;*/
+/*    width: 600px;*/
+/*    height: 600px;*/
+/*    background: radial-gradient(*/
+/*        circle,*/
+/*        rgba(0, 180, 255, 0.12),*/
+/*        transparent 70%*/
+/*    );*/
+/*    filter: blur(100px);*/
+/*    z-index: -1;*/
+/*    pointer-events: none;*/
+/*}*/
 
 /* ── Scrollbar ───────────────────────────────────────────────────────── */
-::-webkit-scrollbar { width: 10px; }
-::-webkit-scrollbar-track { background: #050816; }
-::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 999px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #050816;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
 
 /* ── Selection ───────────────────────────────────────────────────────── */
-::selection { background: rgba(0, 180, 255, 0.35); color: white; }
+::selection {
+    background: rgba(0, 180, 255, 0.35);
+    color: white;
+}
 
 /* ── Tap highlight ───────────────────────────────────────────────────── */
-* { -webkit-tap-highlight-color: transparent; }
+* {
+    -webkit-tap-highlight-color: transparent;
+}
 
 /* ── Gradient orb (used in CTASection etc) ───────────────────────────── */
 .gradient-orb {
@@ -204,19 +218,23 @@ body::after {
     height: 600px;
     border-radius: 999px;
     background: radial-gradient(
-        circle,
-        rgba(0, 180, 255, 0.18),
-        transparent 70%
+            circle,
+            rgba(0, 180, 255, 0.18),
+            transparent 70%
     );
     filter: blur(120px);
     pointer-events: none;
 }
 
 /* ── Cursor ──────────────────────────────────────────────────────────── */
-body { cursor: none; }
+body {
+    cursor: none;
+}
 
 @media (max-width: 768px) {
-    body { cursor: auto; }
+    body {
+        cursor: auto;
+    }
 }
 
 /* ── Section defaults ────────────────────────────────────────────────── */
@@ -228,14 +246,22 @@ section {
 
 /* ── Hero Ken Burns drift (compositor-only, gentle zoom — no panning) ── */
 @keyframes kenburns {
-    0%, 100% { transform: scale(1); }
-    50%      { transform: scale(1.015); }
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.015);
+    }
 }
+
 .kenburns {
     animation: kenburns 20s ease-in-out infinite;
     will-change: transform;
 }
-.kenburns--paused { animation-play-state: paused; }
+
+.kenburns--paused {
+    animation-play-state: paused;
+}
 
 /* ── Hero title: shrinks so the longest word always fits the screen ── */
 /* The number right after min( is the biggest size allowed — change it to taste. */
@@ -244,12 +270,14 @@ section {
     --avail: calc(100vw - 3rem);
     font-size: max(2rem, min(3.5rem, calc(var(--avail) / var(--wem)), calc(42vh / var(--words))));
 }
+
 @media (min-width: 768px) {
     .hero-title {
         --avail: calc(100vw - 6rem);
         font-size: max(2.5rem, min(5rem, calc(var(--avail) / var(--wem)), calc(42vh / var(--words))));
     }
 }
+
 @media (min-width: 1024px) {
     .hero-title {
         --avail: calc(100vw - 20rem);
@@ -258,22 +286,35 @@ section {
 }
 
 /* ── Lenis smooth scroll ─────────────────────────────────────────────── */
-html.lenis { scroll-behavior: auto; }
-.lenis.lenis-smooth { scroll-behavior: auto; }
+html.lenis {
+    scroll-behavior: auto;
+}
+
+.lenis.lenis-smooth {
+    scroll-behavior: auto;
+}
 
 /* ── Mobile perf ─────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
-    .glass { backdrop-filter: blur(10px); }
+    .glass {
+        backdrop-filter: blur(10px);
+    }
 
-    h1 { letter-spacing: -0.04em; }
+    h1 {
+        letter-spacing: -0.04em;
+    }
 
-    .sticky { position: relative !important; }
+    .sticky {
+        position: relative !important;
+    }
 
     .gradient-orb,
     .ambient-light,
-    .particles { display: none; }
+    .particles {
+        display: none;
+    }
 
-    * { animation-duration: 0.6s !important; }
+    /** { animation-duration: 0.6s !important; }*/
 }
 
 /* ── GPU layer ───────────────────────────────────────────────────────── */
@@ -285,37 +326,54 @@ html.lenis { scroll-behavior: auto; }
 
 /* ── Indian tricolour text shimmer ──────────────────────────────────────── */
 @keyframes tricolourShimmer {
-    0%   { background-position: 0% 50%; }
-    100% { background-position: 100% 50%; }
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 100% 50%;
+    }
 }
 
 @keyframes marquee-left {
-    from { transform: translateX(0%); }
-    to   { transform: translateX(-50%); }
+    from {
+        transform: translateX(0%);
+    }
+    to {
+        transform: translateX(-50%);
+    }
 }
 
 @keyframes marquee-right {
-    from { transform: translateX(-50%); }
-    to   { transform: translateX(0%); }
+    from {
+        transform: translateX(-50%);
+    }
+    to {
+        transform: translateX(0%);
+    }
 }
 
 /* ── Scroll reveals: CSS transitions (compositor-driven, off the main thread) ── */
 .reveal {
     opacity: 0;
     transform: translate(var(--rx, 0px), var(--ry, 0px));
-    transition:
-            opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1) var(--rd, 0s),
-            transform 0.9s cubic-bezier(0.22, 1, 0.36, 1) var(--rd, 0s);
+    transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1) var(--rd, 0s),
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1) var(--rd, 0s);
 }
+
 .reveal.is-in {
     opacity: 1;
     transform: none; /* "none" lets the browser drop the GPU layer afterwards */
 }
 
 /* Card image hover zoom */
-.card-img { transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1); }
+.card-img {
+    transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 @media (hover: hover) {
-    .card-img:hover { transform: scale(1.03); }
+    .card-img:hover {
+        transform: scale(1.03);
+    }
 }
 
 /* "Plan Your Trip" button */
@@ -333,37 +391,203 @@ html.lenis { scroll-behavior: auto; }
     font-weight: 700;
     letter-spacing: 0.3em;
     text-transform: uppercase;
-    transition:
-            border-color 0.25s,
-            background 0.25s,
-            transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: border-color 0.25s,
+    background 0.25s,
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 }
+
 .story-cta:hover {
     background: rgba(34, 211, 238, 0.08);
     border-color: rgba(34, 211, 238, 0.6);
     transform: translateX(6px);
 }
-.story-cta:active { transform: translateX(6px) scale(0.97); }
+
+.story-cta:active {
+    transform: translateX(6px) scale(0.97);
+}
 
 @media (prefers-reduced-motion: reduce) {
-    .reveal { opacity: 1; transform: none; transition: none; }
-    .kenburns { animation: none; }
+    .reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+
+    .kenburns {
+        animation: none;
+    }
 }
 
 /* ── Floating ↑ / ↓ page pointers ── */
 .scroll-pointer {
     opacity: var(--op, 0);
     cursor: pointer;
-    transition:
-            opacity 0.45s ease,
-            transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
-            border-color 0.25s,
-            color 0.25s,
-            background-color 0.25s;
+    transition: opacity 0.45s ease,
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.25s,
+    color 0.25s,
+    background-color 0.25s;
 }
+
 .scroll-pointer[data-show="true"]:hover {
     opacity: 1;
     border-color: rgba(103, 232, 249, 0.7);
     color: #a5f3fc;
     background-color: rgba(8, 145, 178, 0.2);
+}
+
+/* ── During a programmatic scroll (arrows / Explore / Show Interest) ───────── */
+html[data-auto-scroll] main {
+    pointer-events: none;
+}
+
+html[data-auto-scroll] .kenburns {
+    animation-play-state: paused;
+}
+
+html[data-auto-scroll] .reveal {
+    transition-delay: 0s !important;
+}
+
+/* ── Destination card gallery (stacked-card effect) ─────────────────────────── */
+/* --dir is +1 when the card sits on the right of the row, -1 on the left.      */
+.gallery {
+    position: relative;
+    height: 520px;
+}
+
+.gallery__deck {
+    position: absolute;
+    inset: 0;
+    border-radius: 2.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    pointer-events: none;
+}
+
+.gallery__deck--1 {
+    transform: translateX(calc(var(--dir) * 14px)) scale(0.97);
+    opacity: 0.8;
+}
+
+.gallery__deck--2 {
+    transform: translateX(calc(var(--dir) * 28px)) scale(0.94);
+    opacity: 0.45;
+}
+
+.gallery__zoom {
+    position: absolute;
+    inset: 0;
+    transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (hover: hover) {
+    .gallery:hover .gallery__zoom {
+        transform: scale(1.03);
+    }
+}
+
+.gallery__layer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 2.5rem;
+    display: block;
+}
+
+@keyframes gallery-out {
+    to {
+        transform: translateX(calc(var(--dir) * 44px)) rotate(calc(var(--dir) * 2deg)) scale(0.96);
+        opacity: 0;
+    }
+}
+
+@keyframes gallery-in {
+    from {
+        transform: translateX(calc(var(--dir) * 16px)) scale(0.95);
+        opacity: 0;
+    }
+}
+
+.gallery__layer--out {
+    z-index: 2;
+    animation: gallery-out 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.gallery__layer--in {
+    z-index: 1;
+    animation: gallery-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.gallery__arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 5;
+    width: 46px;
+    height: 46px;
+    margin-top: -23px;
+    border-radius: 999px;
+    background: rgba(5, 8, 22, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.25s, border-color 0.25s, color 0.25s, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.gallery__arrow--right {
+    right: 16px;
+}
+
+.gallery__arrow--left {
+    left: 16px;
+}
+
+.gallery__arrow:hover {
+    background: rgba(8, 145, 178, 0.35);
+    border-color: rgba(103, 232, 249, 0.7);
+    color: #a5f3fc;
+    transform: scale(1.08);
+}
+
+.gallery__arrow:active {
+    transform: scale(0.94);
+}
+
+.gallery__dots {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    z-index: 5;
+    display: flex;
+    gap: 6px;
+    transform: translateX(-50%);
+}
+
+.gallery__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.45);
+    cursor: pointer;
+    transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.gallery__dot.is-active {
+    width: 22px;
+    background: white;
+}
+
+.gallery__dot:hover {
+    background: #67e8f9;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .gallery__layer--out, .gallery__layer--in {
+        animation: none;
+    }
 }
