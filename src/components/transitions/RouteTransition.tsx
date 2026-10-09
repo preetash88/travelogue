@@ -23,9 +23,9 @@ import { uniqueIndiaStates } from "../../utils/travelData";
 import varanasi from "../../assets/destinations/ghat_benaras.avif";
 import { hideCover } from "../../utils/routeBlock";
 
-declare global {
-    interface Window { __lenis?: { scrollTo: (n: number, o?: object) => void }; }
-}
+// declare global {
+//     interface Window { __lenis?: { scrollTo: (n: number, o?: object) => void }; }
+// }
 
 // ── Slug + content helpers ────────────────────────────────────────────────────
 const toSlug = (n: string) =>

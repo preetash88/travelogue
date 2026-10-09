@@ -1,10 +1,11 @@
 import useEmblaCarousel from "embla-carousel-react";
+import {ArrowRight} from "lucide-react";
 import {motion} from "framer-motion";
 import {useEffect, useRef, useState, type CSSProperties} from "react";
 import {useParams, useNavigate} from "react-router-dom";
 import {uniqueIndiaStates, type IndiaPlace, type IndiaState} from "../utils/travelData";
 import {BOOKING_ID, HERO_ID, scrollToId, storyId} from "../utils/pageAnchor.ts";
-import MagneticButton from "../components/ui/MagneticButton";
+// import MagneticButton from "../components/ui/MagneticButton";
 import ScrollPointers from "../components/ui/ScrollPointers";
 import DestinationStories from "../components/sections/DestinationStories";
 
@@ -83,7 +84,13 @@ const StatePage = (_props: Props) => {
                 alignItems: "center", justifyContent: "center",
                 gap: "24px", padding: "48px", textAlign: "center"
             }}>
-                <p style={{fontSize: "0.65rem", letterSpacing: "0.5em", textTransform: "uppercase", color: "#22d3ee", margin: 0}}>
+                <p style={{
+                    fontSize: "0.65rem",
+                    letterSpacing: "0.5em",
+                    textTransform: "uppercase",
+                    color: "#22d3ee",
+                    margin: 0
+                }}>
                     Not Found
                 </p>
                 <h1 style={{fontSize: "clamp(2rem, 6vw, 4rem)", fontWeight: 900, color: "white", margin: 0}}>
@@ -164,7 +171,9 @@ const StateSlider = ({items, initialIndex}: { items: SliderItem[]; initialIndex:
             setFading(false);
         }, 260);
     };
-    useEffect(() => () => { if (jumpTimer.current) window.clearTimeout(jumpTimer.current); }, []);
+    useEffect(() => () => {
+        if (jumpTimer.current) window.clearTimeout(jumpTimer.current);
+    }, []);
 
     useEffect(() => {
         const el = sectionRef.current;
@@ -182,7 +191,9 @@ const StateSlider = ({items, initialIndex}: { items: SliderItem[]; initialIndex:
         const onSelect = () => setSelectedIndex(emblaApi.selectedScrollSnap());
         emblaApi.on("select", onSelect);
         onSelect();
-        return () => { emblaApi.off("select", onSelect); };
+        return () => {
+            emblaApi.off("select", onSelect);
+        };
     }, [emblaApi]);
 
     useEffect(() => {
@@ -195,7 +206,9 @@ const StateSlider = ({items, initialIndex}: { items: SliderItem[]; initialIndex:
         if (!emblaApi) return;
         const stop = () => setAutoplay(false);
         emblaApi.on("pointerDown", stop);
-        return () => { emblaApi.off("pointerDown", stop); };
+        return () => {
+            emblaApi.off("pointerDown", stop);
+        };
     }, [emblaApi]);
 
     useEffect(() => {
@@ -217,12 +230,17 @@ const StateSlider = ({items, initialIndex}: { items: SliderItem[]; initialIndex:
         (async () => {
             for (const img of imgs) {
                 if (cancelled) return;
-                try { await img.decode(); } catch { /* ignore */ }
+                try {
+                    await img.decode();
+                } catch { /* ignore */
+                }
                 await new Promise(resolve => setTimeout(resolve, 60));
             }
         })();
 
-        return () => { cancelled = true; };
+        return () => {
+            cancelled = true;
+        };
     }, [emblaApi]);
 
     return (
@@ -240,7 +258,8 @@ const StateSlider = ({items, initialIndex}: { items: SliderItem[]; initialIndex:
                         return (
                             <div key={item.id} className="embla__slide relative h-full min-w-full overflow-hidden">
 
-                                <div className={`kenburns absolute inset-0 ${isActive && inView ? "" : "kenburns--paused"}`}>
+                                <div
+                                    className={`kenburns absolute inset-0 ${isActive && inView ? "" : "kenburns--paused"}`}>
                                     <img src={item.image} alt={item.title}
                                          loading="eager"
                                          decoding="async"
@@ -255,8 +274,10 @@ const StateSlider = ({items, initialIndex}: { items: SliderItem[]; initialIndex:
                                     className="absolute inset-0 bg-black/20"
                                 />
 
-                                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[45%] bg-gradient-to-t from-[#050816] via-[#050816]/35 to-transparent"/>
-                                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#050816]/70 via-transparent to-black/20"/>
+                                <div
+                                    className="pointer-events-none absolute inset-x-0 bottom-0 h-[45%] bg-gradient-to-t from-[#050816] via-[#050816]/35 to-transparent"/>
+                                <div
+                                    className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#050816]/70 via-transparent to-black/20"/>
 
                                 <motion.div
                                     animate={{y: isActive ? 0 : 60, opacity: isActive ? 1 : 0}}
@@ -276,9 +297,14 @@ const StateSlider = ({items, initialIndex}: { items: SliderItem[]; initialIndex:
                                         {item.description}
                                     </p>
                                     <div className="mt-5">
-                                        <MagneticButton onClick={() => scrollToId(BOOKING_ID, -60)}>
-                                            Show Interest
-                                        </MagneticButton>
+                                        <button
+                                            type="button"
+                                            className="hero-cta"
+                                            onClick={() => scrollToId(BOOKING_ID, -60)}
+                                        >
+                                            <span>Show Interest</span>
+                                            <ArrowRight size={16} className="hero-cta__arrow"/>
+                                        </button>
                                     </div>
                                 </motion.div>
                             </div>
@@ -292,7 +318,10 @@ const StateSlider = ({items, initialIndex}: { items: SliderItem[]; initialIndex:
 
                 {/* ↑ goes to the PREVIOUS slide */}
                 <button
-                    onClick={() => { emblaApi?.scrollPrev(); setAutoplay(false); }}
+                    onClick={() => {
+                        emblaApi?.scrollPrev();
+                        setAutoplay(false);
+                    }}
                     className="absolute left-1/2 top-[25px] z-40 -translate-x-1/2 text-white/40 transition-all duration-300 hover:text-white"
                 >
                     <span className="text-2xl font-thin">↑</span>
@@ -327,11 +356,13 @@ const StateSlider = ({items, initialIndex}: { items: SliderItem[]; initialIndex:
                                         transition={{duration: 0.6}}
                                         className="pointer-events-none absolute -inset-5 rounded-[3rem] bg-[radial-gradient(closest-side,rgba(103,232,249,0.14),transparent)]"
                                     />
-                                    <div className="relative h-full w-full overflow-hidden rounded-[2rem] border border-white/15">
+                                    <div
+                                        className="relative h-full w-full overflow-hidden rounded-[2rem] border border-white/15">
                                         <img src={item.image} alt={item.title}
                                              decoding="async"
                                              className="relative z-10 h-full w-full object-cover object-[center_30%]"/>
-                                        <div className="absolute inset-0 z-20 bg-gradient-to-t from-black/90 via-black/20 to-transparent"/>
+                                        <div
+                                            className="absolute inset-0 z-20 bg-gradient-to-t from-black/90 via-black/20 to-transparent"/>
                                     </div>
                                     <motion.div
                                         animate={{opacity: isActive ? 1 : 0}}
@@ -356,7 +387,10 @@ const StateSlider = ({items, initialIndex}: { items: SliderItem[]; initialIndex:
 
                 {/* ↓ goes to the NEXT slide */}
                 <button
-                    onClick={() => { emblaApi?.scrollNext(); setAutoplay(false); }}
+                    onClick={() => {
+                        emblaApi?.scrollNext();
+                        setAutoplay(false);
+                    }}
                     className="absolute left-1/2 bottom-[25px] z-40 -translate-x-1/2 text-white/40 transition-all duration-300 hover:text-white"
                 >
                     <span className="text-2xl font-thin">↓</span>
@@ -365,7 +399,8 @@ const StateSlider = ({items, initialIndex}: { items: SliderItem[]; initialIndex:
 
             {/* ── Right dot navigator ─────────────────────────────────────── */}
             <div className="absolute right-8 top-1/2 z-30 hidden -translate-y-1/2 items-center gap-6 lg:flex">
-                <div className="relative flex h-[320px] w-[2px] flex-col items-center justify-between rounded-full bg-white/15">
+                <div
+                    className="relative flex h-[320px] w-[2px] flex-col items-center justify-between rounded-full bg-white/15">
                     {items.map((item, index) => (
                         <motion.button
                             key={index}
@@ -409,7 +444,7 @@ const StateSlider = ({items, initialIndex}: { items: SliderItem[]; initialIndex:
                     <button
                         onClick={() => scrollToId(storyId(selectedIndex), -90)}
                         aria-label={`Explore ${items[selectedIndex]?.title ?? "destination"} below`}
-                        className="cursor-pointer text-xs uppercase tracking-[0.3em] text-white/40 transition-colors duration-300 [writing-mode:vertical-rl] hover:text-cyan-300"
+                        className="origin-center cursor-pointer text-xs uppercase tracking-[0.3em] text-white/40 transition-[color,transform] duration-300 [writing-mode:vertical-rl] hover:scale-125 hover:text-cyan-300"
                     >
                         Explore
                     </button>

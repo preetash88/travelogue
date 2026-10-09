@@ -268,20 +268,20 @@ section {
 .hero-title {
     letter-spacing: -0.05em;
     --avail: calc(100vw - 3rem);
-    font-size: max(2rem, min(3.5rem, calc(var(--avail) / var(--wem)), calc(42vh / var(--words))));
+    font-size: max(2rem, min(2.75rem, calc(var(--avail) / var(--wem)), calc(42vh / var(--words))));
 }
 
 @media (min-width: 768px) {
     .hero-title {
         --avail: calc(100vw - 6rem);
-        font-size: max(2.5rem, min(5rem, calc(var(--avail) / var(--wem)), calc(42vh / var(--words))));
+        font-size: max(2.5rem, min(3.75rem, calc(var(--avail) / var(--wem)), calc(42vh / var(--words))));
     }
 }
 
 @media (min-width: 1024px) {
     .hero-title {
         --avail: calc(100vw - 20rem);
-        font-size: max(3rem, min(7.5rem, calc(var(--avail) / var(--wem)), calc(42vh / var(--words))));
+        font-size: max(3rem, min(5rem, calc(var(--avail) / var(--wem)), calc(42vh / var(--words))));
     }
 }
 
@@ -450,41 +450,114 @@ html[data-auto-scroll] .reveal {
 }
 
 /* ── Destination card gallery (stacked-card effect) ─────────────────────────── */
-/* --dir is +1 when the card sits on the right of the row, -1 on the left.      */
-.gallery {
-    position: relative;
-    height: 520px;
+/* ── Rajasthan "you are here" pill (navbar) ─────────────────────────────────── */
+.state-pill {
+    transition: border-color 0.3s ease, background-color 0.3s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
-
-.gallery__deck {
+.state-pill:hover {
+    border-color: rgba(103, 232, 249, 0.7);
+    background-color: rgba(8, 145, 178, 0.18);
+    transform: translateY(-1px);
+}
+@keyframes pin-pulse {
+    0%   { transform: scale(0.5); opacity: 0.7; }
+    100% { transform: scale(1.5); opacity: 0; }
+}
+.state-pill__pulse {
     position: absolute;
     inset: 0;
+    border-radius: 999px;
+    background: rgba(103, 232, 249, 0.45);
+    animation: pin-pulse 2.4s ease-out infinite;
+}
+
+/* ── Hero "Show Interest" button ────────────────────────────────────────────── */
+.hero-cta {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 26px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: rgba(5, 8, 22, 0.35);
+    color: white;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition:
+            color 0.35s ease,
+            border-color 0.35s ease,
+            transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* teal fill that sweeps in from the left on hover (transform only) */
+.hero-cta::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: #22d3ee;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hero-cta__arrow { transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
+.hero-cta:hover,
+.hero-cta:focus-visible {
+    color: #050816;
+    border-color: #22d3ee;
+    transform: translateY(-2px);
+    outline: none;
+}
+.hero-cta:hover::before,
+.hero-cta:focus-visible::before { transform: scaleX(1); }
+.hero-cta:hover .hero-cta__arrow,
+.hero-cta:focus-visible .hero-cta__arrow { transform: translateX(5px); }
+.hero-cta:active { transform: translateY(0) scale(0.97); }
+
+/* ── Destination card gallery (stack of cards) ──────────────────────────────── */
+.gallery { position: relative; height: 520px; }
+
+/* Cards stacked underneath: --k = depth (1 = just below the top card) */
+.gallery__stack {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
     border-radius: 2.5rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.07);
+    transform-origin: center bottom;
+    transform: translateY(calc(var(--k) * 18px)) scale(calc(1 - var(--k) * 0.07));
+    opacity: calc(1 - var(--k) * 0.18);
     pointer-events: none;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);   /* thin bright outline so each card reads */
+    outline: 3px solid #050816;                               /* dark gap between stacked cards, like paper edges */
 }
-
-.gallery__deck--1 {
-    transform: translateX(calc(var(--dir) * 14px)) scale(0.97);
-    opacity: 0.8;
+.gallery__stack img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.gallery__stack::after {            /* dims the cards underneath — deeper = darker */
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(5, 8, 22, calc(0.28 + var(--k) * 0.12));
 }
-
-.gallery__deck--2 {
-    transform: translateX(calc(var(--dir) * 28px)) scale(0.94);
-    opacity: 0.45;
+@keyframes gallery-stack-shift {
+    from {
+        transform: translateY(calc(var(--from) * 18px)) scale(calc(1 - var(--from) * 0.07));
+        opacity: calc(1 - var(--from) * 0.18);
+    }
 }
+.gallery__stack--shift { animation: gallery-stack-shift 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
 
 .gallery__zoom {
     position: absolute;
     inset: 0;
     transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
-
 @media (hover: hover) {
-    .gallery:hover .gallery__zoom {
-        transform: scale(1.03);
-    }
+    .gallery:hover .gallery__zoom { transform: scale(1.03); }
 }
 
 .gallery__layer {
@@ -495,31 +568,23 @@ html[data-auto-scroll] .reveal {
     object-fit: cover;
     border-radius: 2.5rem;
     display: block;
+    transform-origin: center bottom;
+    outline: 3px solid #050816;   /* dark gap separating the top card from the stack */
 }
 
-@keyframes gallery-out {
-    to {
-        transform: translateX(calc(var(--dir) * 44px)) rotate(calc(var(--dir) * 2deg)) scale(0.96);
-        opacity: 0;
-    }
-}
+/* NEXT: top card flies off to the right, the card underneath rises into place */
+@keyframes gallery-out-next { to { transform: translateX(48px) rotate(2deg) scale(0.96); opacity: 0; } }
+@keyframes gallery-in-next  { from { transform: translateY(16px) scale(0.94); opacity: 0.6; } }
+/* PREV: the previous card swoops back in from the left, the top card drops underneath */
+@keyframes gallery-out-prev { to { transform: translateY(16px) scale(0.94); opacity: 0; } }
+@keyframes gallery-in-prev  { from { transform: translateX(-48px) rotate(-2deg) scale(0.96); opacity: 0; } }
 
-@keyframes gallery-in {
-    from {
-        transform: translateX(calc(var(--dir) * 16px)) scale(0.95);
-        opacity: 0;
-    }
-}
-
-.gallery__layer--out {
-    z-index: 2;
-    animation: gallery-out 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-.gallery__layer--in {
-    z-index: 1;
-    animation: gallery-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
+.gallery__layer--out { z-index: 2; }
+.gallery__layer--in  { z-index: 1; }
+.gallery[data-flow="next"] .gallery__layer--out { animation: gallery-out-next 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.gallery[data-flow="next"] .gallery__layer--in  { animation: gallery-in-next 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.gallery[data-flow="prev"] .gallery__layer--out { animation: gallery-out-prev 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.gallery[data-flow="prev"] .gallery__layer--in  { animation: gallery-in-prev 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
 
 .gallery__arrow {
     position: absolute;
@@ -538,25 +603,15 @@ html[data-auto-scroll] .reveal {
     cursor: pointer;
     transition: background-color 0.25s, border-color 0.25s, color 0.25s, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
-
-.gallery__arrow--right {
-    right: 16px;
-}
-
-.gallery__arrow--left {
-    left: 16px;
-}
-
+.gallery__arrow--right { right: 16px; }
+.gallery__arrow--left  { left: 16px; }
 .gallery__arrow:hover {
     background: rgba(8, 145, 178, 0.35);
     border-color: rgba(103, 232, 249, 0.7);
     color: #a5f3fc;
     transform: scale(1.08);
 }
-
-.gallery__arrow:active {
-    transform: scale(0.94);
-}
+.gallery__arrow:active { transform: scale(0.94); }
 
 .gallery__dots {
     position: absolute;
@@ -567,7 +622,6 @@ html[data-auto-scroll] .reveal {
     gap: 6px;
     transform: translateX(-50%);
 }
-
 .gallery__dot {
     width: 6px;
     height: 6px;
@@ -576,18 +630,10 @@ html[data-auto-scroll] .reveal {
     cursor: pointer;
     transition: width 0.3s ease, background-color 0.3s ease;
 }
-
-.gallery__dot.is-active {
-    width: 22px;
-    background: white;
-}
-
-.gallery__dot:hover {
-    background: #67e8f9;
-}
+.gallery__dot.is-active { width: 22px; background: white; }
+.gallery__dot:hover { background: #67e8f9; }
 
 @media (prefers-reduced-motion: reduce) {
-    .gallery__layer--out, .gallery__layer--in {
-        animation: none;
-    }
+    .state-pill__pulse { animation: none; }
+    .gallery__layer--out, .gallery__layer--in, .gallery__stack--shift { animation: none !important; }
 }

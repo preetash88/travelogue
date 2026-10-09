@@ -1,7 +1,7 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
-import type { IndiaPlace, IndiaState } from "../../utils/travelData";
-import { LOAD_ALL_EVENT, storyId } from "../../utils/pageAnchor";
+import {ChevronLeft, ChevronRight} from "lucide-react";
+import {useEffect, useRef, useState, type CSSProperties, type ReactNode} from "react";
+import type {IndiaPlace, IndiaState} from "../../utils/travelData";
+import {LOAD_ALL_EVENT, storyId} from "../../utils/pageAnchor";
 
 interface Props {
     state: IndiaState;
@@ -23,7 +23,7 @@ const useInView = <T extends HTMLElement>(rootMargin: string) => {
                     io.disconnect();
                 }
             },
-            { rootMargin }
+            {rootMargin}
         );
         io.observe(el);
         return () => io.disconnect();
@@ -54,7 +54,7 @@ const Reveal = ({
         <div
             ref={ref}
             className={`reveal ${seen && !hold ? "is-in" : ""}`}
-            style={{ "--rx": `${x}px`, "--ry": `${y}px`, "--rd": `${delay}s`, ...style } as CSSProperties}
+            style={{"--rx": `${x}px`, "--ry": `${y}px`, "--rd": `${delay}s`, ...style} as CSSProperties}
         >
             {children}
         </div>
@@ -62,7 +62,7 @@ const Reveal = ({
 };
 
 // ── DestinationStories ────────────────────────────────────────────────────────
-const DestinationStories = ({ state, onExploreMore }: Props) => {
+const DestinationStories = ({state, onExploreMore}: Props) => {
     // Give the hero images a head start before the card images begin loading.
     const [armed, setArmed] = useState(false);
     useEffect(() => {
@@ -71,10 +71,10 @@ const DestinationStories = ({ state, onExploreMore }: Props) => {
     }, []);
 
     return (
-        <section style={{ background: "#050816", padding: "0 0 80px" }}>
+        <section style={{background: "#050816", padding: "0 0 80px"}}>
 
             {/* Section label */}
-            <div style={{ padding: "72px 48px 0" }}>
+            <div style={{padding: "72px 48px 0"}}>
                 <Reveal y={20}>
                     <p style={{
                         fontSize: "0.58rem",
@@ -86,9 +86,14 @@ const DestinationStories = ({ state, onExploreMore }: Props) => {
                     }}>
                         {state.state} · All Destinations
                     </p>
-                    <div style={{ width: "40px", height: "1px", background: "rgba(34,211,238,0.3)" }} />
+                    <div style={{width: "40px", height: "1px", background: "rgba(34,211,238,0.3)"}}/>
 
-                    <p style={{ marginTop: "16px", fontSize: "1rem", fontStyle: "italic", color: "rgba(255,255,255,0.45)" }}>
+                    <p style={{
+                        marginTop: "16px",
+                        fontSize: "1rem",
+                        fontStyle: "italic",
+                        color: "rgba(255,255,255,0.45)"
+                    }}>
                         {state.tagline}
                     </p>
                 </Reveal>
@@ -106,11 +111,11 @@ const DestinationStories = ({ state, onExploreMore }: Props) => {
             ))}
 
             {/* Explore More — scrolls to BookingSection */}
-            <div style={{ display: "flex", justifyContent: "flex-end", padding: "24px 48px 0" }}>
+            <div style={{display: "flex", justifyContent: "flex-end", padding: "24px 48px 0"}}>
                 <Reveal y={24} delay={0.1}>
                     <button onClick={onExploreMore} className="story-cta">
                         Plan Your Trip
-                        <span style={{ fontSize: "1rem", lineHeight: 1 }}>→</span>
+                        <span style={{fontSize: "1rem", lineHeight: 1}}>→</span>
                     </button>
                 </Reveal>
             </div>
@@ -141,7 +146,8 @@ const DestinationRow = ({
     const [active, setActive] = useState(0);
     const [leaving, setLeaving] = useState<number | null>(null);
     const [tick, setTick] = useState(0);
-    const dir = imageLeft ? -1 : 1; // which side the deck + arrow sit on
+    const [flow, setFlow] = useState<"next" | "prev">("next"); // which way the last change went
+    const stackCount = Math.min(3, photos.length - 1);       // cards peeking out below
 
     // Start fetching: when near the screen, OR a little after load (staggered),
     // OR instantly when a long scroll is about to happen.
@@ -151,8 +157,10 @@ const DestinationRow = ({
 
         const start = () => setLoad(true);
         const io = new IntersectionObserver(
-            ([entry]) => { if (entry.isIntersecting) start(); },
-            { rootMargin: "2000px 0px" }
+            ([entry]) => {
+                if (entry.isIntersecting) start();
+            },
+            {rootMargin: "2000px 0px"}
         );
         io.observe(el);
         const staggered = window.setTimeout(start, 800 + index * 450);
@@ -170,9 +178,13 @@ const DestinationRow = ({
         const img = imgRef.current;
         if (!load || !img) return;
         let cancelled = false;
-        const ready = () => { if (!cancelled) setImgReady(true); };
+        const ready = () => {
+            if (!cancelled) setImgReady(true);
+        };
         img.decode().then(ready, ready); // on error, still reveal (shows alt text)
-        return () => { cancelled = true; };
+        return () => {
+            cancelled = true;
+        };
     }, [load]);
 
     // Once the first photo is up, quietly warm up the others.
@@ -182,22 +194,26 @@ const DestinationRow = ({
             const im = new Image();
             im.decoding = "async";
             im.src = src;
-            im.decode().catch(() => { /* ignore */ });
+            im.decode().catch(() => { /* ignore */
+            });
         });
     }, [imgReady, photos]);
 
-    useEffect(() => () => { if (timerRef.current) window.clearTimeout(timerRef.current); }, []);
+    useEffect(() => () => {
+        if (timerRef.current) window.clearTimeout(timerRef.current);
+    }, []);
 
-    const goTo = (next: number) => {
+    const goTo = (next: number, direction: "next" | "prev") => {
         if (next === active || photos.length < 2) return;
+        setFlow(direction);
         setLeaving(active);
         setActive(next);
         setTick(t => t + 1);
         if (timerRef.current) window.clearTimeout(timerRef.current);
         timerRef.current = window.setTimeout(() => setLeaving(null), 650);
     };
-    const step = (delta: number) => goTo((active + delta + photos.length) % photos.length);
-
+    const step = (delta: 1 | -1) =>
+        goTo((active + delta + photos.length) % photos.length, delta === 1 ? "next" : "prev");
     const textContent = (
         <Reveal
             x={imageLeft ? 40 : -40}
@@ -256,8 +272,8 @@ const DestinationRow = ({
             </p>
 
             {/* Best time chip */}
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <div style={{ width: "24px", height: "1px", background: "rgba(255,255,255,0.2)" }} />
+            <div style={{display: "flex", alignItems: "center", gap: "10px"}}>
+                <div style={{width: "24px", height: "1px", background: "rgba(255,255,255,0.2)"}}/>
                 <p style={{
                     fontSize: "0.55rem",
                     letterSpacing: "0.4em",
@@ -282,15 +298,24 @@ const DestinationRow = ({
                 <div
                     className="gallery"
                     data-active={active}
-                    style={{ "--dir": dir } as CSSProperties}
+                    data-flow={flow}
                 >
-                    {/* Cards stacked behind (only when there is more than one photo) */}
-                    {photos.length > 1 && (
-                        <>
-                            <div className="gallery__deck gallery__deck--2" />
-                            <div className="gallery__deck gallery__deck--1" />
-                        </>
-                    )}
+                    {/* Cards stacked underneath — their bottom edges peek out */}
+                    {Array.from({length: stackCount}, (_, i) => stackCount - i).map(k => (
+                        <div
+                            key={`stack-${tick}-${k}`}
+                            className={`gallery__stack ${tick > 0 ? "gallery__stack--shift" : ""}`}
+                            style={{"--k": k, "--from": flow === "next" ? k + 1 : k - 1} as CSSProperties}
+                        >
+                            <img
+                                src={load ? photos[(active + k) % photos.length] : undefined}
+                                alt=""
+                                aria-hidden="true"
+                                decoding="async"
+                                style={{objectPosition: place.focus ?? "center"}}
+                            />
+                        </div>
+                    ))}
 
                     <div className="gallery__zoom">
                         {leaving !== null && (
@@ -301,7 +326,7 @@ const DestinationRow = ({
                                 aria-hidden="true"
                                 decoding="async"
                                 className="gallery__layer gallery__layer--out"
-                                style={{ objectPosition: place.focus ?? "center" }}
+                                style={{objectPosition: place.focus ?? "center"}}
                             />
                         )}
                         <img
@@ -311,7 +336,7 @@ const DestinationRow = ({
                             alt={`${place.name} — photo ${active + 1} of ${photos.length}`}
                             decoding="async"
                             className={`gallery__layer ${leaving !== null ? "gallery__layer--in" : ""}`}
-                            style={{ objectPosition: place.focus ?? "center" }}
+                            style={{objectPosition: place.focus ?? "center"}}
                         />
                     </div>
 
@@ -323,21 +348,29 @@ const DestinationRow = ({
                         right: 0,
                         height: "40%",
                         borderRadius: "0 0 2.5rem 2.5rem",
-                        background: "linear-gradient(to top, rgba(5,8,22,0.5), transparent)",
+                        background: "linear-gradient(to top, rgba(5,8,22,0.3), transparent)",
                         zIndex: 3,
                         pointerEvents: "none",
-                    }} />
+                    }}/>
 
                     {photos.length > 1 && (
                         <>
-                            {/* Arrow sits on the same side as the card: right card → next, left card → previous */}
+                            {/* Arrows on BOTH sides of every card */}
                             <button
                                 type="button"
-                                className={`gallery__arrow ${dir === 1 ? "gallery__arrow--right" : "gallery__arrow--left"}`}
-                                onClick={() => step(dir)}
-                                aria-label={`${dir === 1 ? "Next" : "Previous"} photo of ${place.name}`}
+                                className="gallery__arrow gallery__arrow--left"
+                                onClick={() => step(-1)}
+                                aria-label={`Previous photo of ${place.name}`}
                             >
-                                {dir === 1 ? <ChevronRight size={22} /> : <ChevronLeft size={22} />}
+                                <ChevronLeft size={22}/>
+                            </button>
+                            <button
+                                type="button"
+                                className="gallery__arrow gallery__arrow--right"
+                                onClick={() => step(1)}
+                                aria-label={`Next photo of ${place.name}`}
+                            >
+                                <ChevronRight size={22}/>
                             </button>
 
                             <div className="gallery__dots">
@@ -346,7 +379,7 @@ const DestinationRow = ({
                                         key={i}
                                         type="button"
                                         aria-label={`Show photo ${i + 1} of ${place.name}`}
-                                        onClick={() => goTo(i)}
+                                        onClick={() => goTo(i, i > active ? "next" : "prev")}
                                         className={`gallery__dot ${i === active ? "is-active" : ""}`}
                                     />
                                 ))}
@@ -370,13 +403,13 @@ const DestinationRow = ({
         }}>
             {imageLeft ? (
                 <>
-                    <div style={{ order: 0 }}>{imageContent}</div>
-                    <div style={{ order: 1 }}>{textContent}</div>
+                    <div style={{order: 0}}>{imageContent}</div>
+                    <div style={{order: 1}}>{textContent}</div>
                 </>
             ) : (
                 <>
-                    <div style={{ order: 0 }}>{textContent}</div>
-                    <div style={{ order: 1 }}>{imageContent}</div>
+                    <div style={{order: 0}}>{textContent}</div>
+                    <div style={{order: 1}}>{imageContent}</div>
                 </>
             )}
         </div>
