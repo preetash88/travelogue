@@ -39,9 +39,28 @@ const Navbar = ({onContactClick, onDestinationsClick}: Props) => {
         ? uniqueIndiaStates.find(s => toSlug(s.state) === stateMatch.params.stateSlug)
         : undefined;
 
+    const isOnStatePage = !!stateMatch;
+
     const goHome = () => {
-        navigate("/");
-        window.scrollTo({top: 0, behavior: "smooth"});
+        if (isOnStatePage) {
+            // Coming from a state page → restore saved home-page position
+            const saved = sessionStorage.getItem("home-scroll-y");
+            navigate("/");
+            if (saved) {
+                const y = Number(saved);
+                setTimeout(() => {
+                    const lenis = (window as any).__lenis;
+                    if (lenis) lenis.scrollTo(y, { duration: 0.8, immediate: y < 50 });
+                    else window.scrollTo({ top: y, behavior: y < 50 ? "auto" : "smooth" });
+                }, 80);
+            }
+        } else {
+            // Already on home page → go to top
+            navigate("/");
+            const lenis = (window as any).__lenis;
+            if (lenis) lenis.scrollTo(0, { duration: 1.0 });
+            else window.scrollTo({ top: 0, behavior: "smooth" });
+        }
     };
 
     const goToExplorer = () => {
@@ -70,7 +89,7 @@ const Navbar = ({onContactClick, onDestinationsClick}: Props) => {
                 <div
                     aria-hidden="true"
                     className="navbar-scrim pointer-events-none absolute inset-x-0 top-0 -z-10"
-                    style={{opacity: scrimOn ? 3.0 : 0}}
+                    style={{opacity: scrimOn ? 1 : 0}}
                 />
 
                 {/* Logo — showCover on mousedown so cover is up before navigate fires */}
@@ -98,36 +117,47 @@ const Navbar = ({onContactClick, onDestinationsClick}: Props) => {
                     </span>
                 </div>
 
-                {/* "You are here" chip — only on state pages, centred in the bar */}
-                {currentState && (
-                    <div
-                        className="pointer-events-none absolute inset-x-0 bottom-0 top-[10px] hidden items-center justify-center md:flex">
-                        <motion.button
-                            key={currentState.state}
-                            initial={{opacity: 0, y: -6}}
-                            animate={{opacity: 1, y: 0}}
-                            transition={{duration: 0.6, delay: 0.4}}
-                            onClick={() => (window as any).__lenis?.scrollTo(0, {duration: 1.2})}
-                            aria-label={`You are exploring ${currentState.state}. Back to top`}
-                            data-scrim={scrimOn ? "on" : "off"}
-                            className="state-pill pointer-events-auto flex items-center gap-3 rounded-full border py-2 pl-3 pr-6"
+                {/* "You are here" chip — flex child, sits between logo and nav links */}
+                {currentState ? (
+                    <motion.button
+                        key={currentState.state}
+                        initial={{opacity: 0, y: -6}}
+                        animate={{opacity: 1, y: 0}}
+                        transition={{duration: 0.6, delay: 0.4}}
+                        onClick={() => (window as any).__lenis?.scrollTo(0, {duration: 1.2})}
+                        aria-label={`You are exploring ${currentState.state}. Back to top`}
+                        data-scrim={scrimOn ? "on" : "off"}
+                        className="state-pill hidden items-center gap-3 rounded-full border py-2 pl-3 pr-5 md:flex"
+                        style={{ flexShrink: 1, minWidth: 0, maxWidth: "min(380px, 30vw)" }}
+                    >
+        <span className="relative flex h-6 w-6 flex-shrink-0 items-center justify-center">
+            <span className="state-pill__pulse"/>
+            <MapPin size={14} className="state-pill__pin relative text-cyan-300"/>
+        </span>
+                        <span className="hidden flex-shrink-0 text-[10px] uppercase tracking-[0.35em] text-cyan-200/60 xl:inline">
+            Exploring
+        </span>
+                        <span className="hidden h-3 w-px flex-shrink-0 bg-white/20 xl:block"/>
+                        <span
+                            className="font-semibold uppercase text-white"
+                            style={{
+                                textShadow: "0 1px 6px rgba(0,0,0,0.6)",
+                                fontSize: currentState.state.length > 22 ? "0.62rem"
+                                    : currentState.state.length > 15 ? "0.72rem" : "0.82rem",
+                                letterSpacing: currentState.state.length > 22 ? "0.08em"
+                                    : currentState.state.length > 15 ? "0.18em" : "0.35em",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                                minWidth: 0,
+                            }}
                         >
-    <span className="relative flex h-6 w-6 items-center justify-center">
-        <span className="state-pill__pulse"/>
-        <MapPin size={14} className="state-pill__pin relative text-cyan-300"/>
-    </span>
-                            <span className="hidden text-[10px] uppercase tracking-[0.35em] text-cyan-200/60 xl:inline">
-        Exploring
-    </span>
-                            <span className="hidden h-3 w-px bg-white/20 xl:block"/>
-                            <span
-                                className="text-[13px] font-semibold uppercase tracking-[0.4em] text-white"
-                                style={{textShadow: "0 1px 6px rgba(0,0,0,0.6)"}}
-                            >
-        {currentState.state}
-    </span>
-                        </motion.button>
-                    </div>
+            {currentState.state}
+        </span>
+                    </motion.button>
+                ) : (
+                    // Invisible spacer so the nav links stay right-aligned on non-state pages
+                    <span className="hidden md:block" aria-hidden="true"/>
                 )}
 
                 {/* Desktop nav */}

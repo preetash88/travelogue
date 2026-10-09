@@ -95,10 +95,10 @@ const HeroSlider = (_props: Props) => {
                     transition={{duration: 1, delay: 0.3}}
                     style={{
                         fontSize: "1.1rem",
-                        fontWeight: 900,
+                        fontWeight: 950,
                         letterSpacing: "0.6em",
                         textTransform: "uppercase",
-                        color: "rgba(255,255,255,0.92)",
+                        color: "rgba(255,255,255,0.99)",
                         marginBottom: "14px",
                         textShadow: "0 1px 4px rgba(0,0,0,0.8), 0 2px 12px rgba(0,0,0,0.6)",
                     }}
@@ -113,7 +113,7 @@ const HeroSlider = (_props: Props) => {
                     style={{
                         fontSize: "clamp(0.75rem, 1.5vw, 1rem)",
                         lineHeight: 1.7,
-                        color: "rgba(255,255,255,0.75)",
+                        color: "rgba(255,255,255,0.80)",
                         marginBottom: "28px",
                         textShadow: "0 1px 6px rgba(0,0,0,0.9), 0 2px 16px rgba(0,0,0,0.7)",
                         maxWidth: "480px",
