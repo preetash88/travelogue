@@ -2,10 +2,9 @@ import useEmblaCarousel from "embla-carousel-react";
 import {ArrowRight} from "lucide-react";
 import {motion} from "framer-motion";
 import {useEffect, useRef, useState, type CSSProperties} from "react";
-import {useParams, useNavigate} from "react-router-dom";
+import {useParams, useNavigate, useLocation} from "react-router-dom";
 import {uniqueIndiaStates, type IndiaPlace, type IndiaState} from "../utils/travelData";
-import {BOOKING_ID, HERO_ID, scrollToId, storyId} from "../utils/pageAnchor.ts";
-// import MagneticButton from "../components/ui/MagneticButton";
+import {BOOKING_ID, HERO_ID, LOAD_ALL_EVENT, scrollToId, storyId} from "../utils/pageAnchor.ts";
 import ScrollPointers from "../components/ui/ScrollPointers";
 import DestinationStories from "../components/sections/DestinationStories";
 
@@ -75,6 +74,46 @@ const StatePage = (_props: Props) => {
     const {stateSlug, destSlug} = useParams<{ stateSlug: string; destSlug?: string }>();
     const navigate = useNavigate();
 
+    // Scroll to the specific destination card if ?scrollTo=N is in the URL.
+    const location = useLocation();
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const idx = parseInt(params.get("scrollTo") ?? "", 10);
+        if (isNaN(idx) || idx < 0) return;
+
+        // How long the lazy loader needs before we scroll:
+        //   600ms  — DestinationStories arms itself
+        //   800ms  — base stagger before any row starts loading
+        //   idx * 450ms — extra stagger per row
+        //   600ms  — buffer for images to start decoding
+        // We fire LOAD_ALL_EVENT immediately to skip the per-row stagger,
+        // then wait just long enough for images to begin fetching before scrolling.
+        const ARMED_DELAY = 600;   // matches DestinationStories armed timeout
+        const LOAD_BUFFER = 800;   // extra time for images to start after LOAD_ALL fires
+        const totalWait   = ARMED_DELAY + LOAD_BUFFER;
+
+        // Fire LOAD_ALL after armed delay so every card image wakes up at once.
+        const t1 = window.setTimeout(() => {
+            window.dispatchEvent(new Event(LOAD_ALL_EVENT));
+        }, ARMED_DELAY);
+
+        // Scroll after images have had time to start fetching.
+        // Scroll after images have had time to start fetching.
+        const t2 = window.setTimeout(() => {
+            const el = document.getElementById(storyId(idx));
+            if (!el) return;
+            const y = el.getBoundingClientRect().top + window.scrollY - 90;
+            const lenis = (window as any).__lenis;
+            if (lenis) {
+                lenis.scrollTo(y, { duration: 1.7, easing: (t: number) => -(Math.cos(Math.PI * t) - 1) / 2 });
+            } else {
+                window.scrollTo({ top: y, behavior: "smooth" });
+            }
+        }, totalWait);
+
+        return () => { window.clearTimeout(t1); window.clearTimeout(t2); };
+    }, [location.search]);
+
     const stateData: IndiaState | undefined = stateSlug ? stateBySlug[stateSlug] : undefined;
 
     if (!stateData) {
@@ -119,6 +158,8 @@ const StatePage = (_props: Props) => {
         : 0;
 
     const scrollToBooking = () => scrollToId(BOOKING_ID, -60);
+
+
 
     return (
         <>

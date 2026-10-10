@@ -1,14 +1,14 @@
-// import iceland from "../assets/destinations/iceland.avif";
-// import bali from "../assets/destinations/bali2.avif";
-// import kerala from "../assets/destinations/kerala1.avif";
-// import norway from "../assets/destinations/norway2.avif";
-// import yosemite from "../assets/destinations/yosemite1.avif";
-// import antarctica from "../assets/destinations/antarctica1.avif";
-// import canada from "../assets/destinations/canadian1.avif";
-// import italy from "../assets/destinations/italy1.avif";
-// import netherlands from "../assets/destinations/netherlands1.avif";
-// import spain from "../assets/destinations/spain1.avif";
-// import sydney from "../assets/destinations/sydney1.avif";
+import iceland from "../assets/destinations/iceland.avif";
+import bali from "../assets/destinations/bali2.avif";
+import kerala from "../assets/destinations/kerala1.avif";
+import norway from "../assets/destinations/norway2.avif";
+import yosemite from "../assets/destinations/yosemite1.avif";
+import antarctica from "../assets/destinations/antarctica1.avif";
+import canada from "../assets/destinations/canadian1.avif";
+import italy from "../assets/destinations/italy1.avif";
+import netherlands from "../assets/destinations/netherlands1.avif";
+import spain from "../assets/destinations/spain1.avif";
+import sydney from "../assets/destinations/sydney1.avif";
 import jaipur from "../assets/destinations/rajasthan/jaipur_amer_fort.avif?hero";
 import jaipurCard from "../assets/destinations/rajasthan/jaipur_amer_fort.avif?card";
 import pushkar from "../assets/destinations/rajasthan/pushkar_camel_fair.avif?hero";
@@ -42,94 +42,94 @@ export const destinations = [
             "The eternal city on the Ganges. Watch the sacred Ganga Aarti at dawn, glide past ancient ghats in a wooden boat, and feel a civilisation older than time.",
         isDefault: true,
     },
-    {
-        id: 1,
-        title: "KERALA",
-        location: "God's Own Country",
-        image: kerala,
-        description:
-            "Drift through emerald backwaters, sleep on a houseboat, and wake to spice-scented hill stations.",
-    },
-    {
-        id: 2,
-        title: "ICELAND",
-        location: "Nordic Escape",
-        image: iceland,
-        description:
-            "Aurora-lit skies, thundering waterfalls, and volcanic landscapes — nature at its most dramatic.",
-    },
-    {
-        id: 3,
-        title: "BALI",
-        location: "Island Paradise",
-        image: bali,
-        description:
-            "Rice terraces, ancient temples, and turquoise surf define this spiritual island escape.",
-    },
-    {
-        id: 4,
-        title: "NORWAY",
-        location: "Norway Fjords",
-        image: norway,
-        description:
-            "Glacier-carved fjords, midnight sun, and Viking heritage in the land of the northern lights.",
-    },
-    {
-        id: 5,
-        title: "YOSEMITE",
-        location: "American National Parks",
-        image: yosemite,
-        description:
-            "Half Dome at sunrise, giant sequoias, and mirror-still valleys — America's crown jewel.",
-    },
-    {
-        id: 6,
-        title: "ANTARCTICA",
-        location: "Icy Antarctica",
-        image: antarctica,
-        description:
-            "The last great wilderness — icebergs the size of cities and silence that speaks.",
-    },
-    {
-        id: 7,
-        title: "CANADA",
-        location: "Canadian Rockies",
-        image: canada,
-        description:
-            "Turquoise glacier lakes, moose-dotted forests, and skies so big they humble you.",
-    },
-    {
-        id: 8,
-        title: "ITALY",
-        location: "Italian Alps",
-        image: italy,
-        description:
-            "Renaissance art, Roman ruins, Dolomite peaks, and the world's finest cuisine.",
-    },
-    {
-        id: 9,
-        title: "NETHERLANDS",
-        location: "Dutch Windmills",
-        image: netherlands,
-        description:
-            "Tulip fields in bloom, canal-side cycling, and the quiet magic of Golden Age art.",
-    },
-    {
-        id: 10,
-        title: "SPAIN",
-        location: "Ambient Barcelona",
-        image: spain,
-        description:
-            "Gaudí's dreamscapes, flamenco rhythms, and a coastline made for golden evenings.",
-    },
-    {
-        id: 11,
-        title: "SYDNEY",
-        location: "Sydney Opera House",
-        image: sydney,
-        description:
-            "Harbour bridges, surf beaches, and a city that always feels like summer.",
-    },
+    // {
+    //     id: 1,
+    //     title: "KERALA",
+    //     location: "God's Own Country",
+    //     image: kerala,
+    //     description:
+    //         "Drift through emerald backwaters, sleep on a houseboat, and wake to spice-scented hill stations.",
+    // },
+    // {
+    //     id: 2,
+    //     title: "ICELAND",
+    //     location: "Nordic Escape",
+    //     image: iceland,
+    //     description:
+    //         "Aurora-lit skies, thundering waterfalls, and volcanic landscapes — nature at its most dramatic.",
+    // },
+    // {
+    //     id: 3,
+    //     title: "BALI",
+    //     location: "Island Paradise",
+    //     image: bali,
+    //     description:
+    //         "Rice terraces, ancient temples, and turquoise surf define this spiritual island escape.",
+    // },
+    // {
+    //     id: 4,
+    //     title: "NORWAY",
+    //     location: "Norway Fjords",
+    //     image: norway,
+    //     description:
+    //         "Glacier-carved fjords, midnight sun, and Viking heritage in the land of the northern lights.",
+    // },
+    // {
+    //     id: 5,
+    //     title: "YOSEMITE",
+    //     location: "American National Parks",
+    //     image: yosemite,
+    //     description:
+    //         "Half Dome at sunrise, giant sequoias, and mirror-still valleys — America's crown jewel.",
+    // },
+    // {
+    //     id: 6,
+    //     title: "ANTARCTICA",
+    //     location: "Icy Antarctica",
+    //     image: antarctica,
+    //     description:
+    //         "The last great wilderness — icebergs the size of cities and silence that speaks.",
+    // },
+    // {
+    //     id: 7,
+    //     title: "CANADA",
+    //     location: "Canadian Rockies",
+    //     image: canada,
+    //     description:
+    //         "Turquoise glacier lakes, moose-dotted forests, and skies so big they humble you.",
+    // },
+    // {
+    //     id: 8,
+    //     title: "ITALY",
+    //     location: "Italian Alps",
+    //     image: italy,
+    //     description:
+    //         "Renaissance art, Roman ruins, Dolomite peaks, and the world's finest cuisine.",
+    // },
+    // {
+    //     id: 9,
+    //     title: "NETHERLANDS",
+    //     location: "Dutch Windmills",
+    //     image: netherlands,
+    //     description:
+    //         "Tulip fields in bloom, canal-side cycling, and the quiet magic of Golden Age art.",
+    // },
+    // {
+    //     id: 10,
+    //     title: "SPAIN",
+    //     location: "Ambient Barcelona",
+    //     image: spain,
+    //     description:
+    //         "Gaudí's dreamscapes, flamenco rhythms, and a coastline made for golden evenings.",
+    // },
+    // {
+    //     id: 11,
+    //     title: "SYDNEY",
+    //     location: "Sydney Opera House",
+    //     image: sydney,
+    //     description:
+    //         "Harbour bridges, surf beaches, and a city that always feels like summer.",
+    // },
 ];
 
 // ─── India State Explorer Data ────────────────────────────────────────────────
